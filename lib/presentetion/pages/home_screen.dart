@@ -1,4 +1,5 @@
 import 'package:app_praca_ciencia/core/widgets/carrossel.dart';
+import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
 
@@ -13,16 +14,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Bem Vindo(a)')),
-      // Menu lateral
+      appBar: Header(title: 'Bem Vindo(a)'),
       drawer: Menu(),
-      body: Padding(
+      body: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-        child: Column(
-          children: [
-            Carrossel()
-          ],
-        ),
+        color: Color(0xFFFFFFFF),
+        child: Column(children: [Carrossel()]),
       ),
     );
   }

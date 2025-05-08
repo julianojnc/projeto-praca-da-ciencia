@@ -11,6 +11,7 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Color(0xFFFFFFFF),
       child: ListView(
         children: <Widget>[
           DrawerHeader(
@@ -34,7 +35,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.info),
             title: Text('Informações'),
             onTap: () {
-              Navigator.of(context).pushNamed('');
+              Navigator.of(context).pushNamed('/information');
             },
           ),
           ListTile(
@@ -62,14 +63,14 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.park),
             title: Text('A Praça'),
             onTap: () {
-              Navigator.of(context).pushNamed('');
+              Navigator.of(context).pushNamed('/about');
             },
           ),
           ListTile(
             leading: const Icon(Icons.rule),
             title: Text('Regulamentos'),
             onTap: () {
-              Navigator.of(context).pushNamed('');
+              Navigator.of(context).pushNamed('/regulation');
             },
           ),
         ],
