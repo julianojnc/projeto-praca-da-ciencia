@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (_) => SplashScreen(),
         '/home': (_) => HomeScreen(),
-        '/mapa': (_) => InteractiveMap(),
+        '/mapa': (_) => MapScreen(),
         '/information': (_) => InformationScreen(),
         '/about': (_) => AboutScreen(),
         '/regulation': (_) => RegulationScreen(),
