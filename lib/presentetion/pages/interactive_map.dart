@@ -14,7 +14,7 @@ class MapScreen extends StatelessWidget {
         name: 'Ponto de Interesse 1',
         xRel: 0.3,
         yRel: 0.4,
-        icon: Icons.location_on,
+        iconPath: 'assets/images/logo.ico',
         data: {'info': 'Detalhes sobre este local'},
       ),
       MapPoint(
@@ -22,7 +22,7 @@ class MapScreen extends StatelessWidget {
         name: 'Ponto Importante',
         xRel: 0.7,
         yRel: 0.6,
-        icon: Icons.flag,
+        iconPath: 'assets/images/logo.ico',
         data: {'info': 'Outras informações'},
       ),
     ];

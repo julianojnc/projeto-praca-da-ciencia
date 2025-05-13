@@ -108,13 +108,20 @@ class _InteractiveMapState extends State<InteractiveMap> {
                                     width: 2,
                                   ),
                                 ),
-                                child: point.icon != null
-                                    ? Icon(
-                                        point.icon,
-                                        size: widget.pointSizeFactor * width * 0.6,
-                                        color: Colors.white,
-                                      )
-                                    : null,
+                                child:
+                                    point.iconPath != null
+                                        ? Image.asset(
+                                          point.iconPath!,
+                                          width:
+                                              widget.pointSizeFactor *
+                                              width *
+                                              0.8,
+                                          height:
+                                              widget.pointSizeFactor *
+                                              width *
+                                              0.8,
+                                        )
+                                        : null,
                               ),
                             ),
                           );
@@ -141,7 +148,7 @@ class MapPoint {
   final String name;
   final double xRel;
   final double yRel;
-  final IconData? icon;
+  final String? iconPath;
   final dynamic data;
 
   MapPoint({
@@ -149,7 +156,7 @@ class MapPoint {
     required this.name,
     required this.xRel,
     required this.yRel,
-    this.icon,
+    this.iconPath,
     this.data,
   });
 }
