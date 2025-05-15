@@ -20,6 +20,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.account_circle),
           onPressed: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).pushNamed('/profile');
           },
         ),

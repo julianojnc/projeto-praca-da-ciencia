@@ -42,97 +42,69 @@ class _InteractiveMapState extends State<InteractiveMap> {
   Widget build(BuildContext context) {
     return OrientationBuilder(
       builder: (context, orientation) {
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final isPortrait = orientation == Orientation.portrait;
-            double width, height;
-
-            // Calcula as dimensões
-            if (isPortrait) {
-              width = constraints.maxWidth;
-              height = width / widget.imageAspectRatio;
-              if (height > constraints.maxHeight) {
-                height = constraints.maxHeight;
-                width = height * widget.imageAspectRatio;
-              }
-            } else {
-              height = constraints.maxHeight;
-              width = height * widget.imageAspectRatio;
-              if (width > constraints.maxWidth) {
-                width = constraints.maxWidth;
-                height = width / widget.imageAspectRatio;
-              }
-            }
-
-            return Center(
-              child: GestureDetector(
-                onDoubleTapDown: (details) => _tapDownDetails = details,
-                onDoubleTap: _handleDoubleTap,
-                child: InteractiveViewer(
-                  transformationController: _transformationController,
-                  boundaryMargin: const EdgeInsets.all(double.infinity),
-                  minScale: 0.5,
-                  maxScale: 10.0,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            widget.imageAsset,
-                            width: width,
-                            height: height,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        ...widget.points.map((point) {
-                          return Positioned(
-                            left: point.xRel * width,
-                            top: point.yRel * height,
-                            child: GestureDetector(
-                              onTap: () {
-                                if (widget.onPointTap != null) {
-                                  widget.onPointTap!(point);
-                                }
-                              },
-                              child: Container(
-                                width: widget.pointSizeFactor * width,
-                                height: widget.pointSizeFactor * width,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: widget.pointColor.withOpacity(0.5),
-                                  border: Border.all(
-                                    color: widget.pointColor,
-                                    width: 2,
-                                  ),
-                                ),
-                                child:
-                                    point.iconPath != null
-                                        ? Image.asset(
-                                          point.iconPath!,
-                                          width:
-                                              widget.pointSizeFactor *
-                                              width *
-                                              0.8,
-                                          height:
-                                              widget.pointSizeFactor *
-                                              width *
-                                              0.8,
-                                        )
-                                        : null,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
+        return InteractiveViewer(
+          transformationController: _transformationController,
+          boundaryMargin: const EdgeInsets.all(double.infinity),
+          minScale: 0.5,
+          maxScale: 10.0,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    widget.imageAsset,
+                    fit: BoxFit.cover, // Alterado para cover
                   ),
                 ),
-              ),
-            );
-          },
+                ...widget.points.map((point) {
+                  return Positioned(
+                    left: point.xRel * MediaQuery.of(context).size.width,
+                    top: point.yRel * MediaQuery.of(context).size.height,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (widget.onPointTap != null) {
+                          widget.onPointTap!(point);
+                        }
+                      },
+                      child: Container(
+                        width:
+                            widget.pointSizeFactor *
+                            MediaQuery.of(context).size.width,
+                        height:
+                            widget.pointSizeFactor *
+                            MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: widget.pointColor.withOpacity(0.5),
+                          border: Border.all(
+                            color: widget.pointColor,
+                            width: 2,
+                          ),
+                        ),
+                        child:
+                            point.iconPath != null
+                                ? Image.asset(
+                                  point.iconPath!,
+                                  width:
+                                      widget.pointSizeFactor *
+                                      MediaQuery.of(context).size.width *
+                                      0.8,
+                                  height:
+                                      widget.pointSizeFactor *
+                                      MediaQuery.of(context).size.width *
+                                      0.8,
+                                )
+                                : null,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
         );
       },
     );

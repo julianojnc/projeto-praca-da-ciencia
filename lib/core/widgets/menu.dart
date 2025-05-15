@@ -21,6 +21,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.home),
             title: Text('Inicio'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('/home');
             },
           ),
@@ -28,6 +29,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.map_outlined),
             title: Text('Mapa'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('/mapa');
             },
           ),
@@ -35,6 +37,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.info),
             title: Text('Informações'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('/information');
             },
           ),
@@ -42,6 +45,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.photo_camera),
             title: Text('Tuor Virtual'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('');
             },
           ),
@@ -49,6 +53,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.calendar_month),
             title: Text('Agendamentos'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('');
             },
           ),
@@ -56,6 +61,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.newspaper),
             title: Text('Notícias'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('');
             },
           ),
@@ -63,6 +69,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.park),
             title: Text('A Praça'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('/about');
             },
           ),
@@ -70,6 +77,7 @@ class _MenuState extends State<Menu> {
             leading: const Icon(Icons.rule),
             title: Text('Regulamentos'),
             onTap: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushNamed('/regulation');
             },
           ),
