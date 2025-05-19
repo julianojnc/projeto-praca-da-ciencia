@@ -1,21 +1,23 @@
-import 'package:app_praca_ciencia/core/widgets/header.dart';
-import 'package:app_praca_ciencia/core/widgets/map.dart';
-import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:app_praca_ciencia/core/widgets/header.dart';
+import 'package:app_praca_ciencia/core/widgets/menu.dart';
+import 'package:app_praca_ciencia/core/widgets/map.dart';
 
+// Tela do mapa interativo
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Forçar orientação paisagem ao entrar na tela
+    // Força orientação paisagem ao entrar
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
 
-    final List<MapPoint> points = [
+    // Lista de pontos a serem exibidos no mapa
+    final points = [
       MapPoint(
         id: '1',
         name: 'Ponto de Interesse 1',
@@ -38,6 +40,7 @@ class MapScreen extends StatelessWidget {
       appBar: Header(title: 'Mapa Interativo'),
       drawer: Menu(),
       body: WillPopScope(
+        // Restaura orientação da tela ao sair
         onWillPop: () async {
           SystemChrome.setPreferredOrientations([
             DeviceOrientation.portraitUp,
@@ -48,26 +51,22 @@ class MapScreen extends StatelessWidget {
         },
         child: InteractiveMap(
           imageAsset: 'assets/images/mapa.png',
-          imageAspectRatio:
-              MediaQuery.of(context).size.width /
-              MediaQuery.of(context).size.height,
           points: points,
           pointColor: Colors.blue,
           pointSizeFactor: 0.06,
           onPointTap: (point) {
             showDialog(
               context: context,
-              builder:
-                  (context) => AlertDialog(
-                    title: Text(point.name),
-                    content: Text(point.data['info']),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Fechar'),
-                      ),
-                    ],
+              builder: (_) => AlertDialog(
+                title: Text(point.name),
+                content: Text(point.data['info']),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Fechar'),
                   ),
+                ],
+              ),
             );
           },
         ),

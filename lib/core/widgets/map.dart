@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class InteractiveMap extends StatefulWidget {
   final String imageAsset;
-  final double imageAspectRatio;
   final List<MapPoint> points;
   final Function(MapPoint)? onPointTap;
   final Color pointColor;
@@ -11,7 +11,6 @@ class InteractiveMap extends StatefulWidget {
   const InteractiveMap({
     super.key,
     required this.imageAsset,
-    required this.imageAspectRatio,
     required this.points,
     this.onPointTap,
     this.pointColor = Colors.red,
@@ -23,86 +22,75 @@ class InteractiveMap extends StatefulWidget {
 }
 
 class _InteractiveMapState extends State<InteractiveMap> {
-  late TransformationController _transformationController;
-  late TapDownDetails _tapDownDetails;
-
-  @override
-  void initState() {
-    super.initState();
-    _transformationController = TransformationController();
-  }
+  final _controller = TransformationController();
 
   @override
   void dispose() {
-    _transformationController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        return InteractiveViewer(
-          transformationController: _transformationController,
-          boundaryMargin: const EdgeInsets.all(double.infinity),
-          minScale: 0.5,
-          maxScale: 10.0,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    widget.imageAsset,
-                    fit: BoxFit.cover, // Alterado para cover
-                  ),
-                ),
-                ...widget.points.map((point) {
-                  return Positioned(
-                    left: point.xRel * MediaQuery.of(context).size.width,
-                    top: point.yRel * MediaQuery.of(context).size.height,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (widget.onPointTap != null) {
-                          widget.onPointTap!(point);
-                        }
-                      },
-                      child: Container(
-                        width:
-                            widget.pointSizeFactor *
-                            MediaQuery.of(context).size.width,
-                        height:
-                            widget.pointSizeFactor *
-                            MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: widget.pointColor.withOpacity(0.5),
-                          border: Border.all(
-                            color: widget.pointColor,
-                            width: 2,
-                          ),
-                        ),
-                        child:
-                            point.iconPath != null
-                                ? Image.asset(
-                                  point.iconPath!,
-                                  width:
-                                      widget.pointSizeFactor *
-                                      MediaQuery.of(context).size.width *
-                                      0.8,
-                                  height:
-                                      widget.pointSizeFactor *
-                                      MediaQuery.of(context).size.width *
-                                      0.8,
-                                )
-                                : null,
-                      ),
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return FutureBuilder<Size>(
+      future: _getImageSize(widget.imageAsset),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+        final imageSize = snapshot.data!;
+        final imageAspectRatio = imageSize.width / imageSize.height;
+
+        // Altura fixada pela altura da tela
+        final displayHeight = screenHeight;
+        final displayWidth = displayHeight * imageAspectRatio;
+
+        return Center(
+          child: InteractiveViewer(
+            transformationController: _controller,
+            minScale: 0.5,
+            maxScale: 5.0,
+            boundaryMargin: EdgeInsets.zero,
+            constrained: false,
+            child: SizedBox(
+              height: displayHeight,
+              width: displayWidth,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      widget.imageAsset,
+                      fit: BoxFit.fill,
                     ),
-                  );
-                }).toList(),
-              ],
+                  ),
+                  ...widget.points.map((point) {
+                    final pointSize = widget.pointSizeFactor * displayWidth;
+
+                    return Positioned(
+                      left: point.xRel * displayWidth - pointSize / 2,
+                      top: point.yRel * displayHeight - pointSize / 2,
+                      child: GestureDetector(
+                        onTap: () => widget.onPointTap?.call(point),
+                        child: Container(
+                          width: pointSize,
+                          height: pointSize,
+                          decoration: BoxDecoration(
+                            color: widget.pointColor.withOpacity(0.5),
+                          ),
+                          child: point.iconPath != null
+                              ? Image.asset(
+                                  point.iconPath!,
+                                  width: pointSize * 0.8,
+                                  height: pointSize * 0.8,
+                                )
+                              : null,
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
         );
@@ -110,11 +98,25 @@ class _InteractiveMapState extends State<InteractiveMap> {
     );
   }
 
-  void _handleDoubleTap() {
-    _transformationController.value = Matrix4.identity();
+  Future<Size> _getImageSize(String assetPath) async {
+    final image = Image.asset(assetPath);
+    final completer = Completer<Size>();
+
+    image.image.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener((ImageInfo info, _) {
+        final myImage = info.image;
+        completer.complete(Size(
+          myImage.width.toDouble(),
+          myImage.height.toDouble(),
+        ));
+      }),
+    );
+
+    return completer.future;
   }
 }
 
+// Modelo do ponto do mapa
 class MapPoint {
   final String id;
   final String name;
