@@ -11,10 +11,10 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: IconThemeData(size: 40),
       centerTitle: true,
       title: Text(title, style: TextStyle(fontSize: 25)),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffffffdd),
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(1.0),
-        child: Divider(height: 1.0, color: Color(0xFFFF6A00)),
+        child: Divider(height: 1.0, color: Color(0xFFc5c5b9)),
       ),
       actions: <Widget>[
         IconButton(

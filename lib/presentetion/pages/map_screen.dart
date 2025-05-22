@@ -1,3 +1,4 @@
+import 'package:app_praca_ciencia/presentetion/pages/map_points_information.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app_praca_ciencia/core/widgets/map.dart';
@@ -37,19 +38,27 @@ class _MapScreenState extends State<MapScreen> {
     final points = [
       MapPoint(
         id: '1',
-        name: 'Ponto de Interesse 1',
+        title: 'Gyrotec',
         xRel: 0.3,
         yRel: 0.4,
+        pointSizeFactor: 0.04,
         iconPath: 'assets/images/logo.ico',
-        data: {'info': 'Detalhes sobre este local'},
+        text:
+            'É um equipamento baseado no giro de um volante (como um pião). Quando girado rapidamente, ele demonstra a conservação do momento angular, que é a tendência de um objeto girando manter sua rotação. Ao tentar mudar sua direção, o Gyrotec resiste ao movimento, mostrando na prática como funcionam giroscópios. \n\nUsados em satélites, drones e aviões para orientação.',
+        img: 'assets/images/Gyrotec.png',
+        link: 'google.com',
       ),
       MapPoint(
         id: '2',
-        name: 'Ponto Importante',
+        title: 'Gerador Manual',
         xRel: 0.7,
         yRel: 0.6,
+        pointSizeFactor: 0.09,
         iconPath: 'assets/images/logo.ico',
-        data: {'info': 'Outras informações'},
+        text:
+            'Um dínamo é acionado manualmente por uma manivela, transformando energia mecânica em energia elétrica. A rotação do eixo movimenta ímãs e bobinas internas, gerando corrente elétrica — acendendo lâmpadas ou movendo pequenos dispositivos.\n\nDemonstra os princípios da geração de eletricidade usados em usinas e bicicletas.',
+        img: 'assets/images/GeradorManual.png',
+        link: 'youtube.com',
       ),
     ];
 
@@ -70,21 +79,30 @@ class _MapScreenState extends State<MapScreen> {
               imageAsset: 'assets/images/mapa.png',
               points: points,
               pointColor: const Color.fromARGB(255, 0, 0, 0),
-              pointSizeFactor: 0.05,
-              onPointTap: (point) {
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: Text(point.name),
-                    content: Text(point.data['info']),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Fechar'),
-                      ),
-                    ],
+              onPointTap: (point) async {
+                // Volta para orientação portrait antes de navegar
+                await SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.portraitUp,
+                ]);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => MapPointInformationScreen(
+                          title: point.title,
+                          text: point.text,
+                          img: point.img,
+                          link: point.link,
+                        ),
                   ),
-                );
+                ).then((_) {
+                  // Quando volta para o mapa, restaura orientação landscape
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight,
+                  ]);
+                });
               },
             ),
           ),

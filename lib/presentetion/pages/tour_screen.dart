@@ -1,5 +1,3 @@
-import 'package:app_praca_ciencia/core/widgets/header.dart';
-import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';

@@ -6,7 +6,6 @@ class InteractiveMap extends StatefulWidget {
   final List<MapPoint> points;
   final Function(MapPoint)? onPointTap;
   final Color pointColor;
-  final double pointSizeFactor;
 
   const InteractiveMap({
     super.key,
@@ -14,7 +13,6 @@ class InteractiveMap extends StatefulWidget {
     required this.points,
     this.onPointTap,
     this.pointColor = Colors.red,
-    this.pointSizeFactor = 0.05,
   });
 
   @override
@@ -31,72 +29,72 @@ class _InteractiveMapState extends State<InteractiveMap> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+Widget build(BuildContext context) {
+  final screenHeight = MediaQuery.of(context).size.height;
 
-    return FutureBuilder<Size>(
-      future: _getImageSize(widget.imageAsset),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+  return FutureBuilder<Size>(
+    future: _getImageSize(widget.imageAsset),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-        final imageSize = snapshot.data!;
-        final imageAspectRatio = imageSize.width / imageSize.height;
+      final imageSize = snapshot.data!;
+      final imageAspectRatio = imageSize.width / imageSize.height;
 
-        // Altura fixada pela altura da tela
-        final displayHeight = screenHeight;
-        final displayWidth = displayHeight * imageAspectRatio;
+      // Altura fixada pela altura da tela
+      final displayHeight = screenHeight;
+      final displayWidth = displayHeight * imageAspectRatio;
 
-        return Center(
-          child: InteractiveViewer(
-            transformationController: _controller,
-            minScale: 0.5,
-            maxScale: 5.0,
-            boundaryMargin: EdgeInsets.zero,
-            constrained: false,
-            child: SizedBox(
-              height: displayHeight,
-              width: displayWidth,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      widget.imageAsset,
-                      fit: BoxFit.fill,
-                    ),
+      return Center(
+        child: InteractiveViewer(
+          transformationController: _controller,
+          minScale: 0.5,
+          maxScale: 5.0,
+          boundaryMargin: EdgeInsets.zero,
+          constrained: false,
+          child: SizedBox(
+            height: displayHeight,
+            width: displayWidth,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    widget.imageAsset,
+                    fit: BoxFit.fill,
                   ),
-                  ...widget.points.map((point) {
-                    final pointSize = widget.pointSizeFactor * displayWidth;
+                ),
+                ...widget.points.map((point) {
+                  final pointSize = point.pointSizeFactor * displayWidth; // Usando point.pointSizeFactor
 
-                    return Positioned(
-                      left: point.xRel * displayWidth - pointSize / 2,
-                      top: point.yRel * displayHeight - pointSize / 2,
-                      child: GestureDetector(
-                        onTap: () => widget.onPointTap?.call(point),
-                        child: Container(
-                          width: pointSize,
-                          height: pointSize,
-                          decoration: BoxDecoration(
-                            color: widget.pointColor.withOpacity(0.5),
-                          ),
-                          child: point.iconPath != null
-                              ? Image.asset(
-                                  point.iconPath!,
-                                  width: pointSize * 0.8,
-                                  height: pointSize * 0.8,
-                                )
-                              : null,
+                  return Positioned(
+                    left: point.xRel * displayWidth - pointSize / 2,
+                    top: point.yRel * displayHeight - pointSize / 2,
+                    child: GestureDetector(
+                      onTap: () => widget.onPointTap?.call(point),
+                      child: Container(
+                        width: pointSize,
+                        height: pointSize,
+                        decoration: BoxDecoration(
+                          color: widget.pointColor.withOpacity(0.5),
                         ),
+                        child: point.iconPath != null
+                            ? Image.asset(
+                                point.iconPath!,
+                                width: pointSize * 0.8,
+                                height: pointSize * 0.8,
+                              )
+                            : null,
                       ),
-                    );
-                  }),
-                ],
-              ),
+                    ),
+                  );
+                }),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Future<Size> _getImageSize(String assetPath) async {
     final image = Image.asset(assetPath);
@@ -119,18 +117,24 @@ class _InteractiveMapState extends State<InteractiveMap> {
 // Modelo do ponto do mapa
 class MapPoint {
   final String id;
-  final String name;
+  final String title;
   final double xRel;
   final double yRel;
+  final double pointSizeFactor;
   final String? iconPath;
-  final dynamic data;
+  final String text;
+  final String img;
+  final String link;
 
   MapPoint({
     required this.id,
-    required this.name,
+    required this.title,
     required this.xRel,
     required this.yRel,
+    required this.text,
+    required this.img,
+    required this.link,
+    this.pointSizeFactor = 0.06,
     this.iconPath,
-    this.data,
   });
 }
