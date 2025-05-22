@@ -46,7 +46,7 @@ class _MenuState extends State<Menu> {
             title: Text('Tuor Virtual'),
             onTap: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.of(context).pushNamed('');
+              Navigator.of(context).pushNamed('/tuor');
             },
           ),
           ListTile(

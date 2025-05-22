@@ -5,6 +5,7 @@ import 'package:app_praca_ciencia/presentetion/pages/map_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/profile_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/regulation_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/splash_screen.dart';
+import 'package:app_praca_ciencia/presentetion/pages/tour_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/home': (_) => HomeScreen(),
         '/mapa': (_) => MapScreen(),
         '/information': (_) => InformationScreen(),
+        '/tuor': (_) => TuorScreen(),
         '/about': (_) => AboutScreen(),
         '/regulation': (_) => RegulationScreen(),
         '/profile': (_) => ProfileScreen(),
