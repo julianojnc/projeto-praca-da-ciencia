@@ -1,3 +1,4 @@
+import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
@@ -10,7 +11,15 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       iconTheme: IconThemeData(size: 40),
       centerTitle: true,
-      title: Text(title, style: TextStyle(fontSize: 25)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 36,
+          fontStyle: FontStyle.italic,
+          fontWeight: FontWeight.bold,
+          color: Styles.fontColor
+        ),
+      ),
       backgroundColor: Color(0xffffffdd),
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(1.0),
@@ -18,7 +27,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: <Widget>[
         IconButton(
-          icon: const Icon(Icons.account_circle),
+          icon: const Icon(Icons.account_circle, color: Color(0xff854C01),),
           onPressed: () {
             Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).pushNamed('/profile');

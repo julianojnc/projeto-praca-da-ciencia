@@ -39,8 +39,8 @@ class _MapScreenState extends State<MapScreen> {
       MapPoint(
         id: '1',
         title: 'Gyrotec',
-        xRel: 0.3,
-        yRel: 0.4,
+        xRel: 0.82,
+        yRel: 0.59,
         pointSizeFactor: 0.04,
         iconPath: 'assets/images/logo.ico',
         text:
@@ -51,9 +51,9 @@ class _MapScreenState extends State<MapScreen> {
       MapPoint(
         id: '2',
         title: 'Gerador Manual',
-        xRel: 0.7,
-        yRel: 0.6,
-        pointSizeFactor: 0.09,
+        xRel: 0.415,
+        yRel: 0.56,
+        pointSizeFactor: 0.04,
         iconPath: 'assets/images/logo.ico',
         text:
             'Um dínamo é acionado manualmente por uma manivela, transformando energia mecânica em energia elétrica. A rotação do eixo movimenta ímãs e bobinas internas, gerando corrente elétrica — acendendo lâmpadas ou movendo pequenos dispositivos.\n\nDemonstra os princípios da geração de eletricidade usados em usinas e bicicletas.',

@@ -1,10 +1,11 @@
+import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,45 +13,102 @@ class AboutScreen extends StatelessWidget {
       drawer: Menu(),
       body: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment(0.8, 1),
-            colors: <Color>[Color(0xFFFFEA00), Color(0xFFFF6A00)],
-            tileMode: TileMode.mirror,
-          ),
-        ),
+        height: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+        decoration: BoxDecoration(color: Styles.backgroundColor),
         child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+            color: Styles.backgroundContentColor,
+            borderRadius: BorderRadius.circular(30),
           ),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  width: double.infinity,
+                  padding: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
                   child: Text(
-                    "Sobre nós",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    'Sobre nós',
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Styles.fontColor,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text(
-                  "A Praça da Ciência oferece conhecimento e diversão em um local agradável, de frente para o mar, com segurança e amplo estacionamento, além da orientação de educadores durante toda a visita. As vias de circulação são livres, inclusive para cadeirantes.\nO acervo é composto por equipamentos interativos, expostos ao ar livre, para o estudo dos conceitos científicos ligados principalmente à física. É um local muito visitado por crianças e apreciadores da ciência.\nDurante as visitas, os participantes são convidados para um debate sobre ciência, experimentando os equipamentos e relatando suas impressões. Nessa vertente de interação entre o uso dos equipamentos científicos e o diálogo com os educadores, ocorre a popularização dos conhecimentos da ciência, tendo o lúdico como aliado importante nesse processo.\nAlém das visitas culturais (espontâneas) e mediadas (com acompanhamento), a equipe do espaço ministra oficinas científicas, palestras, atividades culturais, minicursos e programas de apoio aos profissionais da educação e público em geral.\nA Praça da Ciência também participa de pesquisas voltadas para ciência, educação e cultura.\n\nQuer conhecer a nossa história detalhada? Entre em nosso site abaixo e conheça a história da praça e de onde nós estamos localizados:",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Color(0xFF757575),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
                   ),
-                  textAlign: TextAlign.justify,
+                  child: _buildText(
+                    'A Praça da Ciência oferece conhecimento e diversão em um local agradável, de frente para o mar, com segurança e amplo estacionamento, além da orientação de educadores durante a visita.',
+                  ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 50),
-                  child: Image(image: AssetImage('assets/images/logo.png')),
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: _buildTitle('Missão'),
                 ),
+                Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
+                  child: _buildText(
+                    'Divulgar e democratizar os conhecimentos científicos produzidos pela humanidade por meio de visitas mediadas, oficinas pedagógicas, palestras, atividades culturais e apoio aos profissionais da educação.',
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: _buildTitle('Visão'),
+                ),
+                Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
+                  child: _buildText(
+                    'Ser um Centro de Ciência Interativo de referência Nacional na popularização da ciência,  preservação do acervo, pesquisa, produção do conhecimento e promoção de programas educativos que fomentem a educação e a cidadania.',
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: _buildText(
+                    'Quer conhecer a nossa história detalhada? Clique no ícone abaixo e saiba mais!',
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image(
+                        image: AssetImage('assets/images/infoIcon.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      Text(
+                        'Mais informações',
+                        style: TextStyle(
+                          color: Styles.fontColor,
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                  ],
+                )
               ],
             ),
           ),
@@ -58,4 +116,20 @@ class AboutScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildTitle(String text) {
+  return Text(
+    text,
+    style: TextStyle(
+      fontSize: 24,
+      color: Styles.fontColor,
+      fontWeight: FontWeight.bold,
+    ),
+    textAlign: TextAlign.center,
+  );
+}
+
+Widget _buildText(String text) {
+  return Text(text, style: TextStyle(fontSize: 20, color: Styles.fontColor));
 }

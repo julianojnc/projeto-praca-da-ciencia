@@ -1,3 +1,4 @@
+import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
@@ -12,49 +13,97 @@ class RegulationScreen extends StatelessWidget {
       drawer: Menu(),
       body: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment(0.8, 1),
-            colors: <Color>[Color(0xFFFFEA00), Color(0xFFFF6A00)],
-            tileMode: TileMode.mirror,
-          ),
-        ),
+        height: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+        decoration: BoxDecoration(color: Styles.backgroundColor),
         child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+            color: Styles.backgroundContentColor,
+            borderRadius: BorderRadius.circular(30),
           ),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: _buildTitle(
-                    "Bem vindo(a), aos regulamentos da Praça da Ciência",
+                  width: double.infinity,
+                  padding: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
+                  child: Text(
+                    'Bem vindo (a) aos regulamentos da Praça da Ciência',
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Styles.fontColor,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                _buildText(
-                  "Assim como muitos espaços públicos tem seus códigos de vestimenta, regulamentos e propósito, a Praça da Ciência não é diferente, nós somos um espaço pedagógico com foco em disseminar a ciência, conheça a seguir, nossos relgulamentos e orientações para que sua visita seja bastante proveitosa.",
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
+                  child: _buildText(
+                    'Assim como diversos espaços públicos, a Praça da Ciência conta com códigos de vestimentas e convivência, siga nosso regulamento para uma visita bastante proveitosa.',
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 10),
-                  child: _buildTitle("Não é permitido"),
-                ),
-                _buildText(
-                  "- Pessoas sem camisa ou traje de banho;\n- Bicicletas(use o bicicletário);\n- Menores de 10 anos, desacompanhados dos responsáveis;\n- Animais domésticos;\n- Usar patinetes, patins, skates, brinquedos motorizados ou similares;\n- Festas de aniversário, piquinique e consumo de bebidas alcoólicas;\n- Fumar.",
+                  child: _buildTitle('Não é permitido'),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: _buildTitle(
-                    "Orientações para o uso dos equipamentos pedagógicos",
+                  padding: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Styles.lineBorderColor),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Alinha à esquerda
+                    children: [
+                      _buildListItem("Pessoas sem camisa ou traje de banho;"),
+                      _buildListItem("Bicicletas (use o bicicletário);"),
+                      _buildListItem(
+                        "Menores da 10 anos desacompanhados dos responsáveis;",
+                      ),
+                      _buildListItem("Animais domésticos;"),
+                      _buildListItem(
+                        "Usar patinetes, patins, skates, brinquedos motorizados ou similares;",
+                      ),
+                      _buildListItem(
+                        "Festas de aniversário, piquiniques e consumo de bebidas alcoólicas;",
+                      ),
+                      _buildListItem("Fumar;"),
+                    ],
                   ),
                 ),
-                _buildText(
-                  "- Leitura das placas dos equipamentos;\n- Observação quanto às restrições de uso: peso, altura e calçado adequado;\n- Seguir as orientações dos mediadores",
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: _buildTitle(
+                    'Orientações para o uso dos equipamentos pedagógicos',
+                  ),
+                ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Alinha à esquerda
+                    children: [
+                      _buildListItem("Leitura das placas dos equipamentos;"),
+                      _buildListItem(
+                        "Observação quanto às restrições de uso incluindo peso, altura e calçado adequado;",
+                      ),
+                      _buildListItem("Seguir as orientações dos mediadores."),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -65,17 +114,39 @@ class RegulationScreen extends StatelessWidget {
   }
 }
 
-Widget _buildText(String text) {
+Widget _buildTitle(String text) {
   return Text(
     text,
-    style: const TextStyle(fontSize: 20, color: Color(0xFF757575)),
+    style: TextStyle(
+      fontSize: 24,
+      color: Styles.fontColor,
+      fontWeight: FontWeight.bold,
+    ),
+    textAlign: TextAlign.center,
   );
 }
 
-Widget _buildTitle(String title) {
-  return Text(
-    title,
-    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-    textAlign: TextAlign.center,
+Widget _buildText(String text) {
+  return Text(text, style: TextStyle(fontSize: 20, color: Styles.fontColor));
+}
+
+Widget _buildListItem(String text) {
+  return Container(
+    padding: EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "• ",
+          style: TextStyle(fontSize: 20, color: Styles.fontColor),
+        ), // Marcador
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 20, color: Styles.fontColor),
+          ),
+        ),
+      ],
+    ),
   );
 }
