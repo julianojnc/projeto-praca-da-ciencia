@@ -1,4 +1,5 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
+import 'package:app_praca_ciencia/presentetion/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -197,31 +198,42 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
 
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            'Não possui conta?',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Styles.fontColor,
-                            ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterScreen(),
                           ),
-                          Text(
-                            'Cadastre-se aqui',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Styles.fontColor,
-                              fontWeight: FontWeight.bold,
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              'Não possui conta?',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Styles.fontColor,
+                              ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              'Cadastre-se aqui',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Styles.fontColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-
                     Text(
                       'ACESSO SEM CADASTRO',
                       style: TextStyle(
@@ -242,7 +254,7 @@ class LoginScreen extends StatelessWidget {
 }
 
 Widget _buildLabel(String text) {
-  return Container(
+  return SizedBox(
     width: double.infinity,
     child: Padding(
       padding: const EdgeInsets.only(bottom: 5, top: 10),

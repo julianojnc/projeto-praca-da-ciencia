@@ -18,15 +18,20 @@ class MapPointInformationScreen extends StatelessWidget {
     required this.link,
   });
 
-  Future<void> _launchURL() async {
-    final Uri url = Uri.parse(link);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Função local para abrir o link no navegador
+    Future<void> _launchURL() async {
+      final Uri url = Uri.parse(link);
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Não foi possível abrir o link.')),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: Header(title: title),
       drawer: Menu(),
@@ -61,7 +66,7 @@ class MapPointInformationScreen extends StatelessWidget {
                   border: Border(top: BorderSide(color: Styles.lineBorderColor)),
                 ),
                 child: Text(
-                  'Quer entender melhor? Assista ao vídeo explicativo clicando ícone abaixo!',
+                  'Quer entender melhor? Assista ao vídeo explicativo clicando no ícone abaixo!',
                   style: TextStyle(fontSize: 20, color: Styles.fontColor),
                 ),
               ),
@@ -77,7 +82,7 @@ class MapPointInformationScreen extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                       Text(
-                        title +'\nPraça da Ciência',
+                        '$title\nPraça da Ciência',
                         style: TextStyle(
                           color: Styles.linkColor,
                           fontSize: 20,

@@ -46,7 +46,7 @@ class _MapScreenState extends State<MapScreen> {
         text:
             'É um equipamento baseado no giro de um volante (como um pião). Quando girado rapidamente, ele demonstra a conservação do momento angular, que é a tendência de um objeto girando manter sua rotação. Ao tentar mudar sua direção, o Gyrotec resiste ao movimento, mostrando na prática como funcionam giroscópios. \n\nUsados em satélites, drones e aviões para orientação.',
         img: 'assets/images/Gyrotec.png',
-        link: 'google.com',
+        link: 'https://www.google.com',
       ),
       MapPoint(
         id: '2',
@@ -58,7 +58,7 @@ class _MapScreenState extends State<MapScreen> {
         text:
             'Um dínamo é acionado manualmente por uma manivela, transformando energia mecânica em energia elétrica. A rotação do eixo movimenta ímãs e bobinas internas, gerando corrente elétrica — acendendo lâmpadas ou movendo pequenos dispositivos.\n\nDemonstra os princípios da geração de eletricidade usados em usinas e bicicletas.',
         img: 'assets/images/GeradorManual.png',
-        link: 'youtube.com',
+        link: 'https://www.youtube.com',
       ),
     ];
 
