@@ -60,6 +60,102 @@ class _MapScreenState extends State<MapScreen> {
         img: 'assets/images/GeradorManual.png',
         link: 'https://www.youtube.com',
       ),
+      MapPoint(
+        id: '3',
+        title: 'Sistema Solar',
+        xRel: 0.273,
+        yRel: 0.53,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Este modelo mostra os planetas girando ao redor do Sol, cada um em sua órbita. Serve para visualizar a posição, os tamanhos relativos e os movimentos dos corpos celestes. Pode incluir o movimento de rotação (em torno do próprio eixo) e translação (em torno do Sol), facilitando o entendimento do dia e noite, estações do ano e anos solares.',
+        img: 'assets/images/SistemaSolar.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '4',
+        title: 'Teimosinho',
+        xRel: 0.624,
+        yRel: 0.53,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Boneco com peso na base, que sempre volta à posição original mesmo quando empurrado. Demonstra o centro de massa e equilíbrio estável, ajudando a entender porque alguns objetos se mantêm em pé mesmo sendo instáveis à primeira vista. Usado em bonecos “joão-bobo” e dispositivos de estabilização naval (como quilhas) usam o mesmo princípio de autoequilíbrio.',
+        img: 'assets/images/Teimosinho.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '5',
+        title: 'Plano Inclinado',
+        xRel: 0.700,
+        yRel: 0.35,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Uma rampa usada para mostrar como objetos descem ou sobem com menos esforço do que se fossem erguidos verticalmente. Ilustra o conceito de força dividida em componentes. Usado em escorregadores, estradas e cadeiras de rodas.',
+        img: 'assets/images/PlanoInclinado.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '6',
+        title: 'Prato Giratório',
+        xRel: 0.667,
+        yRel: 0.52,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Uma plataforma que gira ao ser impulsionada. Mostra conceitos de inércia, rotação e centrífuga. Ao mudar a posição do corpo sobre o prato, é possível perceber o efeito da distribuição de massa na velocidade do giro. Patinadores artísticos usam essa técnica para acelerar ou desacelerar giros com simples movimentos do corpo.',
+        img: 'assets/images/PratoGiratorio.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '7',
+        title: 'Espelho de Som',
+        xRel: 0.485,
+        yRel: 0.38,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Consiste em superfícies côncavas que refletem ondas sonoras. Se duas pessoas falarem nos focos opostos, conseguem se ouvir mesmo a certa distância. Mostra como o som viaja em linha reta, pode ser refletido e concentrado. O mesmo princípio usado em auditórios e aparelhos auditivos.',
+        img: 'assets/images/EspelhoDeSom.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '8',
+        title: 'Espelho de Som',
+        xRel: 0.563,
+        yRel: 0.50,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Consiste em superfícies côncavas que refletem ondas sonoras. Se duas pessoas falarem nos focos opostos, conseguem se ouvir mesmo a certa distância. Mostra como o som viaja em linha reta, pode ser refletido e concentrado. O mesmo princípio usado em auditórios e aparelhos auditivos.',
+        img: 'assets/images/EspelhoDeSom.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '9',
+        title: 'Escala Musical',
+        xRel: 0.475,
+        yRel: 0.52,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Painel com tubos, barras ou cordas de diferentes comprimentos e tensões que, ao serem tocados, emitem sons de alturas diferentes. Mostra como o tamanho, espessura e material influenciam na frequência e no som produzido. Ajuda a entender como instrumentos musicais produzem notas. Usado em instrumentos como xilofones e flautas utilizam os mesmos princípios. Uma flauta muda o comprimento da coluna de ar para produzir notas.',
+        img: 'assets/images/EscalaMusical.png',
+        link: 'https://www.youtube.com',
+      ),
+      MapPoint(
+        id: '10',
+        title: 'Espelhos Curvos',
+        xRel: 0.750,
+        yRel: 0.48,
+        pointSizeFactor: 0.04,
+        iconPath: 'assets/images/logo.ico',
+        text:
+            'Inclui espelhos côncavos (que convergem a luz) e convexos (que a espalham). Mostram como diferentes curvaturas afetam a formação, tamanho e posição das imagens. São usados em faróis, câmeras de segurança e telescópios.',
+        img: 'assets/images/EspelhosCurvos.png',
+        link: 'https://www.youtube.com',
+      ),
     ];
 
     return Scaffold(
@@ -84,7 +180,7 @@ class _MapScreenState extends State<MapScreen> {
                 await SystemChrome.setPreferredOrientations([
                   DeviceOrientation.portraitUp,
                 ]);
-
+                
                 Navigator.push(
                   context,
                   MaterialPageRoute(

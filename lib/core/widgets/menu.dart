@@ -31,7 +31,7 @@ class _MenuState extends State<Menu> {
                 _buildOptionsMenu('Início', '/home', 'homeIcon', context),
                 _buildOptionsMenu('A Praça', '/about', 'pracaIcon', context),
                 _buildOptionsMenu('Mapa', '/mapa', 'mapIcon', context),
-                _buildOptionsMenu('Tuor Virtual', '/tuor', 'mapIcon', context),
+                _buildOptionsMenu('Tour Virtual', '/tuor', 'cameraIcon', context),
                 _buildOptionsMenu('Oficinas', '', 'oficinasIcon', context),
                 _buildOptionsMenu('Agenda', '', 'agendaIcon', context),
                 _buildOptionsMenu(
