@@ -61,7 +61,7 @@ class LoginScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    _buildLabel('E-MAIL OU CPF'),
+                    _buildLabel('E-MAIL'),
                     _buildTextField(),
                     _buildLabel('SENHA'),
                     _buildTextField(),
