@@ -1,5 +1,5 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
-import 'package:app_praca_ciencia/presentetion/pages/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatefulWidget {
@@ -20,8 +20,8 @@ class _MenuState extends State<Menu> {
             child: Image(image: AssetImage('assets/images/LogoMenu.png')),
           ),
           Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.all(30),
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.all(30),
             decoration: BoxDecoration(
               color: Styles.backgroundContentColor,
               borderRadius: BorderRadius.circular(30),
@@ -31,7 +31,12 @@ class _MenuState extends State<Menu> {
                 _buildOptionsMenu('Início', '/home', 'homeIcon', context),
                 _buildOptionsMenu('A Praça', '/about', 'pracaIcon', context),
                 _buildOptionsMenu('Mapa', '/mapa', 'mapIcon', context),
-                _buildOptionsMenu('Tour Virtual', '/tuor', 'cameraIcon', context),
+                _buildOptionsMenu(
+                  'Tour Virtual',
+                  '/tour',
+                  'cameraIcon',
+                  context,
+                ),
                 _buildOptionsMenu('Oficinas', '', 'oficinasIcon', context),
                 _buildOptionsMenu('Agenda', '', 'agendaIcon', context),
                 _buildOptionsMenu(
@@ -46,14 +51,22 @@ class _MenuState extends State<Menu> {
                   'infoIcon',
                   context,
                 ),
+
+                const SizedBox(height: 20),
+
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Styles.textFieldColor,
-                    padding: EdgeInsets.symmetric(horizontal: 60),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 60,
+                      vertical: 12,
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil('/login', (route) => false);
                   },
                   child: Text(
                     'SAIR',
@@ -73,27 +86,32 @@ class _MenuState extends State<Menu> {
   }
 }
 
-Widget _buildOptionsMenu(String text, String rota, String pathImg, context) {
-  return Container(
-    child: Column(
-      children: [
-        ListTile(
-          leading: Image(
-            image: AssetImage('assets/images/' + pathImg + '.png'),
-            fit: BoxFit.cover,
-          ),
-          title: Text(
-            text,
-            style: TextStyle(fontSize: 20, color: Styles.fontColor),
-            textAlign: TextAlign.center,
-          ),
-          onTap: () {
+Widget _buildOptionsMenu(
+  String text,
+  String rota,
+  String pathImg,
+  BuildContext context,
+) {
+  return Column(
+    children: [
+      ListTile(
+        leading: Image(
+          image: AssetImage('assets/images/$pathImg.png'),
+          fit: BoxFit.cover,
+        ),
+        title: Text(
+          text,
+          style: TextStyle(fontSize: 20, color: Styles.fontColor),
+          textAlign: TextAlign.center,
+        ),
+        onTap: () {
+          if (rota.isNotEmpty) {
             Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).pushNamed(rota);
-          },
-        ),
-        Divider(color: Styles.lineBorderColor),
-      ],
-    ),
+          }
+        },
+      ),
+      Divider(color: Styles.lineBorderColor),
+    ],
   );
 }

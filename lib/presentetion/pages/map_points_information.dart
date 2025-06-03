@@ -20,18 +20,6 @@ class MapPointInformationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Função local para abrir o link no navegador
-    Future<void> _launchURL() async {
-      final Uri url = Uri.parse(link);
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Não foi possível abrir o link.')),
-        );
-      }
-    }
-
     return Scaffold(
       appBar: Header(title: title),
       drawer: Menu(),
@@ -63,7 +51,9 @@ class MapPointInformationScreen extends StatelessWidget {
                 margin: EdgeInsets.only(top: 20),
                 padding: EdgeInsets.only(top: 20),
                 decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Styles.lineBorderColor)),
+                  border: Border(
+                    top: BorderSide(color: Styles.lineBorderColor),
+                  ),
                 ),
                 child: Text(
                   'Quer entender melhor? Assista ao vídeo explicativo clicando no ícone abaixo!',
@@ -71,7 +61,8 @@ class MapPointInformationScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: _launchURL,
+                // Url
+                onTap: () => launch(link),
                 child: Container(
                   padding: EdgeInsets.only(top: 20, bottom: 50),
                   child: Row(

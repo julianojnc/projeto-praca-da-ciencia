@@ -1,16 +1,22 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 
+// A Praça
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar recebe a Widget Header que recebe a string referente ao título
+      // drawer recebe a Widget Menu carregando as rotas
       appBar: Header(title: 'A Praça'),
       drawer: Menu(),
+
+      // Toda a tela
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -22,9 +28,13 @@ class AboutScreen extends StatelessWidget {
             color: Styles.backgroundContentColor,
             borderRadius: BorderRadius.circular(30),
           ),
+
+          // Scroll da tela
           child: SingleChildScrollView(
+            // Conteúdo
             child: Column(
               children: [
+                // Título principal "Sobre nós"
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(bottom: 20),
@@ -44,6 +54,7 @@ class AboutScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                // Campo de texto sobre a praça
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
@@ -55,10 +66,12 @@ class AboutScreen extends StatelessWidget {
                     'A Praça da Ciência oferece conhecimento e diversão em um local agradável, de frente para o mar, com segurança e amplo estacionamento, além da orientação de educadores durante a visita.',
                   ),
                 ),
-                Container(
+                // Título "Missão"
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: _buildTitle('Missão'),
                 ),
+                // Campo de texto sobre a missão da praça
                 Container(
                   padding: EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
@@ -70,10 +83,12 @@ class AboutScreen extends StatelessWidget {
                     'Divulgar e democratizar os conhecimentos científicos produzidos pela humanidade por meio de visitas mediadas, oficinas pedagógicas, palestras, atividades culturais e apoio aos profissionais da educação.',
                   ),
                 ),
-                Container(
+                // Título "Visão"
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: _buildTitle('Visão'),
                 ),
+                //Campo de texto sobre a visão
                 Container(
                   padding: EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
@@ -85,16 +100,23 @@ class AboutScreen extends StatelessWidget {
                     'Ser um Centro de Ciência Interativo de referência Nacional na popularização da ciência,  preservação do acervo, pesquisa, produção do conhecimento e promoção de programas educativos que fomentem a educação e a cidadania.',
                   ),
                 ),
-                Container(
+                // Campo de texto para conhecer mais sobre a praça
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: _buildText(
                     'Quer conhecer a nossa história detalhada? Clique no ícone abaixo e saiba mais!',
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image(
+                // Link para mais informações
+                GestureDetector(
+                  onTap:
+                      () => launch(
+                        "https://sites.google.com/edu.vitoria.es.gov.br/praca-da-ciencia/in%C3%ADcio?authuser=0",
+                      ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image(
                         image: AssetImage('assets/images/infoIcon.png'),
                         fit: BoxFit.cover,
                       ),
@@ -107,8 +129,9 @@ class AboutScreen extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                  ],
-                )
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -118,6 +141,7 @@ class AboutScreen extends StatelessWidget {
   }
 }
 
+// build do Título com seu estilo padrão
 Widget _buildTitle(String text) {
   return Text(
     text,
@@ -130,6 +154,7 @@ Widget _buildTitle(String text) {
   );
 }
 
+// build do texto com seu estilo padrão
 Widget _buildText(String text) {
   return Text(text, style: TextStyle(fontSize: 20, color: Styles.fontColor));
 }

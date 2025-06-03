@@ -3,14 +3,19 @@ import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:flutter/material.dart';
 
+// Regulamentos
 class RegulationScreen extends StatelessWidget {
   const RegulationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar recebe a Widget Header que recebe a string referente ao titulo
+      // drawer recebe a Widget Menu carregando as rotas
       appBar: Header(title: 'Regulamentos'),
       drawer: Menu(),
+
+      // Toda a tela
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -22,9 +27,13 @@ class RegulationScreen extends StatelessWidget {
             color: Styles.backgroundContentColor,
             borderRadius: BorderRadius.circular(30),
           ),
+
+          // Scroll da tela
           child: SingleChildScrollView(
+            // Conteúdo
             child: Column(
               children: [
+                // Título principal "Bem vindo(a) aos regulamentos da Praça da Ciência"
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(bottom: 20),
@@ -44,6 +53,7 @@ class RegulationScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                // Texto com a apresentação das regras
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
@@ -55,10 +65,12 @@ class RegulationScreen extends StatelessWidget {
                     'Assim como diversos espaços públicos, a Praça da Ciência conta com códigos de vestimentas e convivência, siga nosso regulamento para uma visita bastante proveitosa.',
                   ),
                 ),
-                Container(
+                // Título "Não é permitido"
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: _buildTitle('Não é permitido'),
                 ),
+                // Lista referente ao que não é permitido
                 Container(
                   padding: EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
@@ -86,16 +98,17 @@ class RegulationScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
+                // Título "Orientações para o uso dos equipamentos pedagógicos"
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: _buildTitle(
                     'Orientações para o uso dos equipamentos pedagógicos',
                   ),
                 ),
-                Container(
+                // Lista de orientações para uso dos equipamentos
+                SizedBox(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // Alinha à esquerda
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildListItem("Leitura das placas dos equipamentos;"),
                       _buildListItem(
@@ -114,6 +127,7 @@ class RegulationScreen extends StatelessWidget {
   }
 }
 
+// build do Título com seu estilo padrão
 Widget _buildTitle(String text) {
   return Text(
     text,
@@ -126,10 +140,12 @@ Widget _buildTitle(String text) {
   );
 }
 
+// build do texto com seu estilo padrão
 Widget _buildText(String text) {
   return Text(text, style: TextStyle(fontSize: 20, color: Styles.fontColor));
 }
 
+// build da lista com seu estilo padrão
 Widget _buildListItem(String text) {
   return Container(
     padding: EdgeInsets.symmetric(vertical: 5),
