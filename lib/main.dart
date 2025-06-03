@@ -1,4 +1,5 @@
 import 'package:app_praca_ciencia/presentetion/pages/about_screen.dart';
+import 'package:app_praca_ciencia/presentetion/pages/agenda_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/home_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/information_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/map_screen.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/profile': (_) => const ProfileScreen(),
         '/register': (_) => const RegisterScreen(),
         '/login': (_) => const LoginScreen(),
+        '/schedule': (_) => const AgendamentoScreen(),
       },
 
       // Tela inicial com verificação do Firebase

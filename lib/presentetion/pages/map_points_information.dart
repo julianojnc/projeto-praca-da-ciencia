@@ -22,7 +22,6 @@ class MapPointInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Header(title: title),
-      drawer: Menu(),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 35),
         width: double.infinity,

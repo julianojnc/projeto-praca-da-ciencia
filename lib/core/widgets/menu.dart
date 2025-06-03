@@ -38,7 +38,7 @@ class _MenuState extends State<Menu> {
                   context,
                 ),
                 _buildOptionsMenu('Oficinas', '', 'oficinasIcon', context),
-                _buildOptionsMenu('Agenda', '', 'agendaIcon', context),
+                _buildOptionsMenu('Agenda', '/schedule', 'agendaIcon', context),
                 _buildOptionsMenu(
                   'Regras',
                   '/regulation',
