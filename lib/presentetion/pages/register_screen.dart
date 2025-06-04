@@ -20,8 +20,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
   final _telefoneController = TextEditingController();
+  final _cepController = TextEditingController();
   final _senhaController = TextEditingController();
   final _confirmarSenhaController = TextEditingController();
+
+  // Visualizar senha
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   // Mascara para cpf
   final _cpfFormatter = MaskTextInputFormatter(
@@ -38,6 +43,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Mascara para Data de nascimento
   final _dataNascimentoFormatter = MaskTextInputFormatter(
     mask: '##/##/####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // Mascara para CAP
+  final _cepFormatter = MaskTextInputFormatter(
+    mask: '#####-###',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -69,6 +80,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         throw 'Telefone inválido';
       }
 
+      // Validação do CEP
+      if (_cepController.text.length < 9) {
+        throw 'CEP inválido';
+      }
+
       // Executa o cadastro
       await _authService.registerWithEmailAndPassword(
         email: _emailController.text,
@@ -77,6 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         dataNascimento: _dataNascimentoController.text,
         cpf: _cpfController.text,
         telefone: _telefoneController.text,
+        cep: _cepController.text,
         context: context,
       );
 
@@ -159,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
         decoration: BoxDecoration(color: Styles.backgroundColor),
         child: SingleChildScrollView(
           child: Container(
@@ -172,7 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     'CADASTRE-SE',
                     style: TextStyle(
@@ -211,6 +228,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   'cadPhoneIcon',
                   _telefoneController,
                   formatter: _telefoneFormatter,
+                ),
+                _buildTextField(
+                  'CEP',
+                  'cadLocalIcon',
+                  _cepController,
+                  formatter: _cepFormatter,
                 ),
                 // Input de Senha
                 _buildTextField(
@@ -305,20 +328,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // build de input com seu style padrão
+  // build input com seu style padrao
   Widget _buildTextField(
     String hintText,
     String pathImg,
     TextEditingController controller, {
-    // Validação se o input é referente a senha
+    // Validacao da visualizacao da senha
     bool isPassword = false,
-    // Validação se o input é referente a data
+    // Validacao do calendario
     bool isDateField = false,
-    // Validação se o input contém mascara
+    // Validacao da Mascara no input
     TextInputFormatter? formatter,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: 20),
       child: PhysicalModel(
         borderRadius: BorderRadius.circular(50),
         color: Styles.textFieldColor,
@@ -333,16 +356,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Row(
             children: [
               Image(
+                height: 30,
                 image: AssetImage('assets/images/${pathImg}.png'),
                 fit: BoxFit.cover,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Container(width: 1, height: 30, color: Colors.grey.shade600),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: TextField(
                   controller: controller,
-                  obscureText: isPassword,
+                  // Visualizacao da senha no input
+                  obscureText:
+                      isPassword
+                          ? (hintText == 'Senha'
+                              ? _obscurePassword
+                              : _obscureConfirmPassword)
+                          : false,
+                  // Mascara no input
                   inputFormatters: formatter != null ? [formatter] : null,
                   decoration: InputDecoration(
                     hintText: hintText,
@@ -350,17 +381,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     suffixIcon:
-                        isDateField
+                    // Visualizacao da senha
+                        isPassword
                             ? IconButton(
                               icon: Icon(
-                                Icons.calendar_today,
+                                (hintText == 'Senha'
+                                        ? _obscurePassword
+                                        : _obscureConfirmPassword)
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: Styles.fontColor,
                               ),
-                              onPressed: () => _selectDate(context),
+                              onPressed: () {
+                                setState(() {
+                                  if (hintText == 'Senha') {
+                                    _obscurePassword = !_obscurePassword;
+                                  } else {
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
+                                  }
+                                });
+                              },
                             )
                             : null,
                   ),
                   readOnly: isDateField,
+                  // Calendario
                   onTap:
                       isDateField
                           ? () async => await _selectDate(context)

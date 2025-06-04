@@ -74,7 +74,7 @@ class AuthService {
     }
   }
 
-  /// ✍️ Cadastro de novo usuário com e-mail e senha
+  // Cadastro de novo usuário com e-mail e senha
   Future<User?> registerWithEmailAndPassword({
     required String email,
     required String password,
@@ -82,6 +82,7 @@ class AuthService {
     required String dataNascimento,
     required String cpf,
     required String telefone,
+    required String cep,
     required BuildContext context, // Para navegação e diálogos
   }) async {
     try {
@@ -105,6 +106,7 @@ class AuthService {
         dataNascimento: dataNascimento,
         cpf: cpf,
         telefone: telefone,
+        cep: cep,
       );
 
       return userCredential.user;
@@ -115,7 +117,7 @@ class AuthService {
     }
   }
 
-  /// 💾 Salva dados do usuário no Firestore
+  // Salva dados do usuário no Firestore
   Future<void> _saveUserData({
     required String uid,
     required String email,
@@ -123,6 +125,7 @@ class AuthService {
     required String dataNascimento,
     required String cpf,
     required String telefone,
+    required String cep,
   }) async {
     await _firestore.collection('users').doc(uid).set({
       'nome': nome.trim(),
@@ -130,12 +133,13 @@ class AuthService {
       'dataNascimento': dataNascimento.trim(),
       'cpf': cpf.trim(),
       'telefone': telefone.trim(),
+      'cep': cep.trim(),
       'createdAt': FieldValue.serverTimestamp(),
       'tipo': 'usuario', // Padrão para usuários comuns
     });
   }
 
-  /// 🛡️ Tratamento de erros específicos do cadastro
+  // Tratamento de erros específicos do cadastro
   String _handleRegisterError(FirebaseAuthException e) {
     switch (e.code) {
       case 'email-already-in-use':
@@ -151,7 +155,7 @@ class AuthService {
     }
   }
 
-  /// 🔍 Verifica se CPF já está cadastrado
+  // Verifica se CPF já está cadastrado
   Future<bool> isCpfRegistered(String cpf) async {
     final query =
         await _firestore
@@ -163,7 +167,7 @@ class AuthService {
     return query.docs.isNotEmpty;
   }
 
-  /// ✉️ Verifica se e-mail já está cadastrado
+  // Verifica se e-mail já está cadastrado
   Future<bool> isEmailRegistered(String email) async {
     try {
       final methods = await _auth.fetchSignInMethodsForEmail(email.trim());

@@ -1,11 +1,16 @@
 // ignore_for_file: use_key_in_widget_constructors, file_names
 
+import 'package:app_praca_ciencia/core/styles/styles.dart';
+import 'package:app_praca_ciencia/core/widgets/header.dart';
+import 'package:app_praca_ciencia/core/widgets/menu.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 // ignore: unused_import
 import 'package:intl/intl.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,7 +18,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CadastroVisitanteScreen extends StatefulWidget {
   @override
-  _CadastroVisitanteScreenState createState() => _CadastroVisitanteScreenState();
+  _CadastroVisitanteScreenState createState() =>
+      _CadastroVisitanteScreenState();
 }
 
 class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
@@ -24,8 +30,46 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _cepController = TextEditingController();
-  final TextEditingController _contatoController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
+
+  // Mascara para cpf
+  final _cepFormatter = MaskTextInputFormatter(
+    mask: '#####-###',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // Mascara para telefone
+  final _telefoneFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        setState(() {
+          _nomeController.text = data['nome'] ?? '';
+          _emailController.text = data['email'] ?? '';
+          _telefoneController.text = data['telefone'] ?? '';
+          _cepController.text = data['cep'] ?? '';
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,171 +83,243 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
         GlobalCupertinoLocalizations.delegate,
       ],
       home: Scaffold(
-        backgroundColor: const Color(0xFFFFF7E5),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Cadastro de Visitantes',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ExpansionTile(
-                  title: const Text(
-                    'Protocolo de visita',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  leading: const Icon(Icons.arrow_drop_down),
+        appBar: Header(title: 'Agendamento'),
+        backgroundColor: Styles.backgroundColor,
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+              color: Styles.backgroundContentColor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    _bulletList([
-                      'Caso venha de bicicleta, deixe-a presa ao bicicletário;',
-                      'Informe ao porteiro que agendou uma visita mediada;',
-                      'Faça sua visita com a companhia de um estudante de graduação das áreas da ciência;',
-                      'Se houver menores de 10 anos no grupo, é preciso estar com adulto responsável;',
-                      'Proibido bebidas alcoólicas e fumo na Praça da Ciência;',
-                      'Proibida a entrada sem camisa ou com trajes de banho;',
-                      'Animais domésticos não são permitidos;',
-                      'Festas de aniversário e piqueniques são proibidos;',
-                    ]),
-                  ],
-                ),
-                const Divider(height: 32),
-                _sectionTitle('Dados Pessoais'),
-                _inputField('Nome', controller: _nomeController),
-                _inputField(
-                  'E-mail',
-                  controller: _emailController,
-                  validator: _validateEmail,
-                ),
-                _inputField(
-                  'CEP',
-                  controller: _cepController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: _validateCep,
-                ),
-                _inputField(
-                  'Contato',
-                  controller: _contatoController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: _validateContato,
-                ),
-                const SizedBox(height: 16),
-                _sectionTitle('Quantidade de pessoas'),
-                Wrap(
-                  spacing: 8,
-                  children: List.generate(10, (index) {
-                    return ChoiceChip(
-                      label: Text('${index + 1}'),
-                      selected: selectedQuantity == index + 1,
-                      onSelected: (selected) {
-                        setState(() {
-                          selectedQuantity = selected ? index + 1 : null;
-                        });
-                      },
-                      selectedColor: Colors.orange,
-                    );
-                  }),
-                ),
-                const SizedBox(height: 24),
-                _sectionTitle('Escolha uma data'),
-                TableCalendar(
-                  locale: 'pt_BR',
-                  firstDay: DateTime.now(),
-                  lastDay: DateTime.now().add(const Duration(days: 365)),
-                  focusedDay: selectedDate ?? DateTime.now(),
-                  selectedDayPredicate: (day) => isSameDay(selectedDate, day),
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      selectedDate = selectedDay;
-                    });
-                  },
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: Styles.lineBorderColor),
+                        ),
+                      ),
+                      child: Text(
+                        'Cadastro de\nvisitantes',
+                        style: TextStyle(
+                          color: Styles.fontColor,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    todayDecoration: BoxDecoration(
-                      color: Colors.brown,
-                      shape: BoxShape.circle,
+                    // Theme para remover as bordas do ExpansionTile
+                    Theme(
+                      data: Theme.of(
+                        context,
+                      ).copyWith(dividerColor: Colors.transparent),
+                      child: ExpansionTile(
+                        initiallyExpanded: true,
+                        title: Text(
+                          'Protocolo de visita',
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: Styles.fontColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        children: [
+                          _bulletList([
+                            'Caso venha de bicicleta, deixe-a presa ao bicicletário;',
+                            'Informe ao porteiro que agendou uma visita mediada;',
+                            'Faça sua visita com a companhia de um estudante de graduação das áreas da ciência;',
+                            'Se houver menores de 10 anos no grupo, é preciso estar com adulto responsável;',
+                            'Proibido bebidas alcoólicas e fumo na Praça da Ciência;',
+                            'Proibida a entrada sem camisa ou com trajes de banho;',
+                            'Animais domésticos não são permitidos;',
+                            'Festas de aniversário e piqueniques são proibidos;',
+                          ]),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _sectionTitle('Escolha um horário'),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children:
-                      [
-                        'Manhã - 9h',
-                        'Manhã - 10h',
-                        'Tarde - 14h',
-                        'Tarde - 15h',
-                      ].map((time) {
+                    _buildTitle('Dados Pessoais'),
+                    _buildLabel('Nome'),
+                    _buildTextFiled('Nome', controller: _nomeController),
+                    _buildLabel('E-mail'),
+                    _buildTextFiled(
+                      'E-mail',
+                      controller: _emailController,
+                      validator: _validateEmail,
+                    ),
+                    _buildLabel('CEP'),
+                    _buildTextFiled(
+                      'CEP',
+                      controller: _cepController,
+                      keyboardType: TextInputType.number,
+                      formatter: _cepFormatter,
+                      validator: _validateCep,
+                    ),
+                    _buildLabel('Contato'),
+                    _buildTextFiled(
+                      'Contato',
+                      controller: _telefoneController,
+                      keyboardType: TextInputType.number,
+                      formatter: _telefoneFormatter,
+                      validator: _validateContato,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTitle('Quantidade de pessoas'),
+
+                    // Botões de quantidade de pessoas
+                    Wrap(
+                      spacing: 8,
+                      children: List.generate(10, (index) {
                         return ChoiceChip(
-                          label: Text(time),
-                          selected: selectedTime == time,
+                          label: SizedBox(
+                            width: 20,
+                            child: Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                color: Styles.fontColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          selected: selectedQuantity == index + 1,
                           onSelected: (selected) {
                             setState(() {
-                              selectedTime = selected ? time : null;
+                              selectedQuantity = selected ? index + 1 : null;
                             });
                           },
-                          selectedColor: Colors.orange,
+                          selectedColor: Styles.textFieldColor,
                         );
-                      }).toList(),
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'A Praça da Ciência é um dos Centros de Ciência, Educação e Cultura da cidade de Vitória/ES, você será muito bem-vindo!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _confirmarAgendamento,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      }),
+                    ),
+
+                    const SizedBox(height: 24),
+                    _buildTitle('Escolha uma data'),
+
+                    // Calendario
+                    TableCalendar(
+                      locale: 'pt_BR',
+                      firstDay: DateTime.now(),
+                      lastDay: DateTime.now().add(const Duration(days: 365)),
+                      focusedDay: selectedDate ?? DateTime.now(),
+                      headerStyle: HeaderStyle(
+                        titleCentered: true,
+                        formatButtonVisible: false,
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 16,
+                      selectedDayPredicate:
+                          (day) => isSameDay(selectedDate, day),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          selectedDate = selectedDay;
+                        });
+                      },
+                      calendarStyle: const CalendarStyle(
+                        // Data Selecionada
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.orange,
+                          shape: BoxShape.circle,
+                        ),
+                        // Data do dia atual
+                        todayDecoration: BoxDecoration(
+                          color: Colors.brown,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.check, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text('Confirmar'),
-                      ],
+                    const SizedBox(height: 24),
+                    _buildTitle('Escolha um horário'),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children:
+                          [
+                            'Manhã - 9h',
+                            'Manhã - 10h',
+                            'Tarde - 14h',
+                            'Tarde - 15h',
+                          ].map((time) {
+                            return ChoiceChip(
+                              label: SizedBox(
+                                width: 100,
+                                child: Text(
+                                  time,
+                                  style: TextStyle(
+                                    color: Styles.fontColor,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              selected: selectedTime == time,
+                              onSelected: (selected) {
+                                setState(() {
+                                  selectedTime = selected ? time : null;
+                                });
+                              },
+                              selectedColor: Styles.textFieldColor,
+                            );
+                          }).toList(),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'A Praça da Ciência é um dos Centros de Ciência, Educação e Cultura da cidade de Vitória/ES, você será muito bem-vindo!',
+                        style: TextStyle(
+                          color: Styles.fontColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _confirmarAgendamento,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Styles.buttonSecond,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(width: 8),
+                            Text(
+                              'FAZER AGENDA',
+                              style: TextStyle(
+                                color: Styles.fontColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
                 ),
-                const SizedBox(height: 32),
-              ],
+              ),
             ),
           ),
         ),
@@ -243,7 +359,7 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
         'nome': _nomeController.text,
         'email': _emailController.text,
         'cep': _cepController.text,
-        'contato': _contatoController.text,
+        'contato': _telefoneController.text,
         'quantidade': selectedQuantity,
         'data': selectedDate!.toIso8601String(),
         'horario': selectedTime,
@@ -290,27 +406,33 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
   }
 
   String? _validateCep(String? value) {
-    if (value == null || value.length != 8) return 'CEP deve ter 8 dígitos';
+    if (value == null || value.length != 9) return 'CEP deve ter 8 dígitos';
     return null;
   }
 
   String? _validateContato(String? value) {
-    if (value == null || (value.length != 10 && value.length != 11)) {
+    if (value == null || (value.length != 14 && value.length != 15)) {
       return 'Contato deve ter DDD + número (10 ou 11 dígitos)';
     }
     return null;
   }
 
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+  Widget _buildTitle(String title) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: Styles.lineBorderColor)),
+      ),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.only(bottom: 8),
       child: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 18,
-          color: Colors.brown[700],
+          fontSize: 24,
+          color: Styles.fontColor,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -320,12 +442,21 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
       children:
           items.map((text) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.only(bottom: 15),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('• ', style: TextStyle(fontSize: 18)),
-                  Expanded(child: Text(text)),
+                  Text(
+                    '• ',
+                    style: TextStyle(fontSize: 20, color: Styles.fontColor),
+                  ),
+                  Expanded(
+                    child: Text(
+                      text,
+                      style: TextStyle(fontSize: 18, color: Styles.fontColor),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -333,25 +464,57 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
     );
   }
 
-  Widget _inputField(
+  // build de label com style padrão
+  Widget _buildLabel(String text) {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 18,
+            color: Styles.fontColor,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.start,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFiled(
     String label, {
     TextEditingController? controller,
     TextInputType? keyboardType,
-    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
+    // Validação se o input contém mascara
+    TextInputFormatter? formatter,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      child: PhysicalModel(
+        borderRadius: BorderRadius.circular(50),
+        color: Styles.textFieldColor,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Styles.textFieldColor,
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            inputFormatters: formatter != null ? [formatter] : null,
+            validator: validator,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Styles.fontColor),
+              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+          ),
         ),
       ),
     );

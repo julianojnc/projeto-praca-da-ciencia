@@ -16,6 +16,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController senhaController = TextEditingController();
   final AuthService authService = AuthService();
 
+  // Visualizar senha
+  bool _obscurePassword = true;
+
   Future<void> _handleLoginWithEmailPassword(BuildContext context) async {
     if (emailController.text.isEmpty || senhaController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,17 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
-
-  // Future<void> _handleAnonymousLogin(BuildContext context) async {
-  //   try {
-  //     await authService.signInAnonymously();
-  //     Navigator.of(context).pushReplacementNamed('/home');
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text(e.toString())));
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -118,13 +110,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildTextField(
                       controller: emailController,
                       hint: 'Digite seu e-mail',
-                      obscure: false,
                     ),
                     _buildLabel('SENHA'),
                     _buildTextField(
                       controller: senhaController,
                       hint: 'Digite sua senha',
-                      obscure: true,
+                      isPassword: true,
+                      obscurePassword: _obscurePassword,
+                      toggleObscurePassword: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
 
                     Container(
@@ -301,14 +298,16 @@ Widget _buildLabel(String text) {
 Widget _buildTextField({
   required TextEditingController controller,
   required String hint,
-  required bool obscure,
+  bool isPassword = false,
+  bool? obscurePassword, // Novo parâmetro
+  VoidCallback? toggleObscurePassword, // Novo parâmetro
 }) {
   return PhysicalModel(
     borderRadius: BorderRadius.circular(50),
     color: Styles.textFieldColor,
     child: TextField(
       controller: controller,
-      obscureText: obscure,
+      obscureText: isPassword ? (obscurePassword ?? true) : false,
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
@@ -321,6 +320,18 @@ Widget _buildTextField({
           horizontal: 16,
           vertical: 14,
         ),
+        suffixIcon:
+            isPassword
+                ? IconButton(
+                  icon: Icon(
+                    (obscurePassword ?? true)
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: Styles.fontColor,
+                  ),
+                  onPressed: toggleObscurePassword,
+                )
+                : null,
       ),
     ),
   );

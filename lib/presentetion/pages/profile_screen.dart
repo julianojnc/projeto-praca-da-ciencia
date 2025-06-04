@@ -1,9 +1,14 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
+import 'package:app_praca_ciencia/core/widgets/calendar.dart';
 // import 'package:app_praca_ciencia/core/widgets/calendar.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
+import 'package:app_praca_ciencia/core/widgets/login_required_dialog.dart';
+import 'package:app_praca_ciencia/core/widgets/oficina_section.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,7 +18,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool showProfile = true;
+  // Inputs Desabilitados
+  bool isEditing = false;
 
   // Controllers para os campos
   final _nomeController = TextEditingController();
@@ -23,16 +31,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _telefoneController = TextEditingController();
   final _enderecoController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
+  // Mascara para cpf
+  final _cpfFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
+  // Mascara para telefone
+  final _telefoneFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // Mascara para Data de nascimento
+  final _dataNascimentoFormatter = MaskTextInputFormatter(
+    mask: '##/##/####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // Mascara para CAP
+  final _cepFormatter = MaskTextInputFormatter(
+    mask: '#####-###',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // Carregando os dados do usuário
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
       if (doc.exists) {
         final data = doc.data()!;
         setState(() {
@@ -41,12 +72,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _cpfController.text = data['cpf'] ?? '';
           _emailController.text = data['email'] ?? '';
           _telefoneController.text = data['telefone'] ?? '';
-          _enderecoController.text = data['endereco'] ?? '';
+          _enderecoController.text = data['cep'] ?? '';
         });
       }
     }
   }
 
+  // Salvando as alterações feitas nos dados do usuário
   Future<void> _saveUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -56,11 +88,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'cpf': _cpfController.text,
         'email': _emailController.text,
         'telefone': _telefoneController.text,
-        'endereco': _enderecoController.text,
+        'cep': _enderecoController.text,
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Dados atualizados com sucesso!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Dados atualizados com sucesso!')));
     }
   }
 
@@ -75,18 +107,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-    // Função para o calendário
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final selectedDate = await DatePicker.showCustomDatePicker(
-  //     context: context,
-  //   );
+  // Função do botão de editar dados do perfil que habilita os inputs
+  void _toggleEditing() async {
+    if (isEditing) {
+      // Já estando no estado de edição será salvo os dados
+      await _saveUserData();
+    }
 
-  //   if (selectedDate != null) {
-  //     setState(() {
-  //       _dataNascimentoController.text = selectedDate;
-  //     });
-  //   }
-  // }
+    setState(() {
+      isEditing = !isEditing; // Alterna o texto do botão de editar para salvar
+    });
+  }
+
+  // Função para o calendário
+  Future<void> _selectDate(BuildContext context) async {
+    final selectedDate = await DatePicker.showCustomDatePicker(
+      context: context,
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _dataNascimentoController.text = selectedDate;
+      });
+    }
+  }
+
+  bool _isUserAuthenticated() {
+    return _auth.currentUser != null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isUserAuthenticated()) {
+        showLoginRequiredDialog(
+          context,
+          'Faça o Login para visualizar os dados do usuário.',
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +197,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child:
-                    showProfile ? _buildProfileSection() : _buildAgendamentoSection(),
+                    showProfile
+                        ? _buildProfileSection()
+                        : _buildAgendamentoSection(),
               ),
             ),
           ],
@@ -164,17 +229,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileSection() {
     return Column(
       children: [
-        _buildTextField('Nome do Usuário', 'cadProfileIcon', controller: _nomeController),
+        _buildTextField(
+          'Nome do Usuário',
+          'cadProfileIcon',
+          controller: _nomeController,
+          readOnly: !isEditing,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('Data de Nascimento', 'cadDateIcon', controller: _dataNascimentoController),
+        _buildTextField(
+          'Data de Nascimento',
+          'cadDateIcon',
+          controller: _dataNascimentoController,
+          isDateField: true,
+          readOnly: !isEditing,
+          formatter: _dataNascimentoFormatter,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('CPF', 'cadDocIcon', controller: _cpfController),
+        _buildTextField(
+          'CPF',
+          'cadDocIcon',
+          controller: _cpfController,
+          readOnly: !isEditing,
+          formatter: _cpfFormatter,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('Email', 'cadEmailIcon', controller: _emailController),
+        _buildTextField(
+          'Email',
+          'cadEmailIcon',
+          controller: _emailController,
+          readOnly: !isEditing,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('Telefone', 'cadPhoneIcon', controller: _telefoneController),
+        _buildTextField(
+          'Telefone',
+          'cadPhoneIcon',
+          controller: _telefoneController,
+          readOnly: !isEditing,
+          formatter: _telefoneFormatter,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('Endereço', 'cadLocalIcon', controller: _enderecoController),
+        _buildTextField(
+          'Endereço',
+          'cadLocalIcon',
+          controller: _enderecoController,
+          readOnly: !isEditing,
+          formatter: _cepFormatter,
+        ),
         const SizedBox(height: 24),
         ElevatedButton(
           style: ButtonStyle(
@@ -186,11 +286,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          onPressed: () {
-            _saveUserData();
-          },
+          onPressed: _toggleEditing,
           child: Text(
-            'SALVAR',
+            isEditing ? 'SALVAR' : 'EDITAR',
             style: TextStyle(
               color: Styles.fontColor,
               fontSize: 24,
@@ -204,93 +302,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildAgendamentoSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       // seu código atual dos agendamentos
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: Text(
-            'Oficinas',
-            style: TextStyle(
-              color: Styles.fontColor,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.start,
+        Text(
+          'Oficinas',
+          style: TextStyle(
+            color: Styles.fontColor,
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
           ),
+          textAlign: TextAlign.start,
         ),
-
-        Container(
-          padding: EdgeInsets.all(20),
-          margin: EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            color: Styles.backgroundContentColor,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Row(
-            children: [
-              Image(
-                image: AssetImage('assets/images/imgOficina.png'),
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    Text(
-                      'Relógio de sol',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '10 - 10',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'MAI - MAI',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Styles.buttonSecond,
-                        ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: BorderSide(color: Styles.fontColor),
-                              ),
-                            ),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        'Informações',
-                        style: TextStyle(
-                          color: Styles.fontColor,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+        const SizedBox(height: 10),
+        StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('oficinas')
+            .where('lista_participantes', arrayContains: FirebaseAuth.instance.currentUser!.uid).snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return CircularProgressIndicator();
+            if(snapshot.data!.docs.isEmpty) {
+              return Text(
+                'Você não está participando de nenhuma oficina!', 
+                style: TextStyle(
+                  color: Styles.lineBorderColor,
+                  fontSize: 16
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+            return OficinasSection(snapshot: snapshot);
+          }
         ),
-
+        SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
           child: Text(
@@ -378,33 +420,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTextField(String hintText, String iconPath, {TextEditingController? controller}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Styles.backgroundContentColor,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Image(
-              image: AssetImage('assets/images/$iconPath.png'),
-              height: 25,
-              width: 25,
-            ),
+  Widget _buildTextField(
+    String hintText,
+    String iconPath, {
+    TextEditingController? controller,
+    // Validação se o input é referente a data
+    bool isDateField = false,
+    // Desabilitacao e habilitacao do modo Editar
+    bool readOnly = true,
+    // Validação se o input contém mascara
+    TextInputFormatter? formatter,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8),
+      child: PhysicalModel(
+        borderRadius: BorderRadius.circular(50),
+        color: Styles.textFieldColor,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Styles.textFieldColor,
+            borderRadius: BorderRadius.circular(50),
           ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hintText,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              Image(
+                height: 30,
+                image: AssetImage('assets/images/$iconPath.png'),
+                fit: BoxFit.cover,
               ),
-            ),
+              SizedBox(width: 12),
+              Container(width: 1, height: 30, color: Styles.lineBorderColor),
+              SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  readOnly: readOnly,
+                  inputFormatters: formatter != null ? [formatter] : null,
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onTap:
+                      isDateField
+                          ? () async =>
+                              await !readOnly ? _selectDate(context) : ''
+                          : null,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

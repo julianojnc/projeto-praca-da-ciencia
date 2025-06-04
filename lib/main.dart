@@ -1,8 +1,10 @@
+import 'package:app_praca_ciencia/core/widgets/oficina_section.dart';
 import 'package:app_praca_ciencia/presentetion/pages/about_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/agenda_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/home_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/information_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/map_screen.dart';
+import 'package:app_praca_ciencia/presentetion/pages/oficina_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/profile_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/register_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/regulation_screen.dart';
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/register': (_) => const RegisterScreen(),
         '/login': (_) => const LoginScreen(),
         '/schedule': (_) => const AgendamentoScreen(),
+        '/workshop': (_) => const OficinaScreen(),
       },
 
       // Tela inicial com verificação do Firebase

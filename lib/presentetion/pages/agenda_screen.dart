@@ -1,38 +1,56 @@
+import 'package:app_praca_ciencia/core/styles/styles.dart';
+import 'package:app_praca_ciencia/core/widgets/header.dart';
+import 'package:app_praca_ciencia/core/widgets/login_required_dialog.dart';
 import 'package:app_praca_ciencia/presentetion/pages/cadastro_visitante_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AgendamentoScreen extends StatelessWidget {
+class AgendamentoScreen extends StatefulWidget {
   const AgendamentoScreen({super.key});
+
+  @override
+  State<AgendamentoScreen> createState() => _AgendamentoScreenState();
+}
+
+class _AgendamentoScreenState extends State<AgendamentoScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool _isUserAuthenticated() {
+    return _auth.currentUser != null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isUserAuthenticated()) {
+        showLoginRequiredDialog(
+          context,
+          'Faça o Login para efetuar agendamentos.',
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFF7E5),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFFFF7E5),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
-        title: Text(
-          'Agendamentos',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
+      backgroundColor: Styles.backgroundColor,
+      appBar: Header(title: "Agendamentos"),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: Text(
-                'Faça seu agendamento',
+                'Faça seu\nagendamento',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown[800],
+                  color: Styles.fontColor,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
             SizedBox(height: 20),
@@ -48,7 +66,7 @@ class AgendamentoScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                   side: BorderSide(color: Colors.grey.shade300),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 16),
@@ -57,7 +75,8 @@ class AgendamentoScreen extends StatelessWidget {
                 child: Text(
                   'Visitante',
                   style: TextStyle(
-                    color: Colors.brown[800],
+                    color: Styles.fontColor,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -76,7 +95,7 @@ class AgendamentoScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                   side: BorderSide(color: Colors.grey.shade300),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 16),
@@ -85,7 +104,8 @@ class AgendamentoScreen extends StatelessWidget {
                 child: Text(
                   'Escolas e outros Grupos',
                   style: TextStyle(
-                    color: Colors.brown[800],
+                    color: Styles.fontColor,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -98,13 +118,13 @@ class AgendamentoScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: Colors.brown[700],
+                color: Styles.fontColor,
               ),
             ),
             SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
-                color: Color(0xFFFFF1C1),
+                color: Styles.backgroundContentColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: EdgeInsets.all(16),

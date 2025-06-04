@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 
 // Estrutura do Calendario
@@ -27,13 +26,14 @@ class DatePicker {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Styles.backgroundColor,
-              onPrimary: Styles.backgroundColor,
-              onSurface: Styles.fontColor,
+              primary:Colors.orange, // Circulo do dia selecionado no calendario
+              onPrimary:Colors.black, // Numero do dia selecionado no calendario
+              onSurface: Styles.fontColor, // Demais textos do calendario
+              surface: Styles.backgroundColor, // Background
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Styles.backgroundContentColor,
+                foregroundColor: Styles.fontColor, // Texto cancelar e confirmar
               ),
             ),
           ),
