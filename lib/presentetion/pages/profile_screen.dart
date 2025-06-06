@@ -4,6 +4,7 @@ import 'package:app_praca_ciencia/core/widgets/calendar.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/login_required_dialog.dart';
 import 'package:app_praca_ciencia/core/widgets/oficina_section.dart';
+import 'package:app_praca_ciencia/core/widgets/visitas_section.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -141,6 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _loadUserData();
 
+    // Se o usuário não estiver autenticado mostra o popup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_isUserAuthenticated()) {
         showLoginRequiredDialog(
@@ -300,10 +302,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // build de agendamentos
   Widget _buildAgendamentoSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      // seu código atual dos agendamentos
       children: [
         Text(
           'Oficinas',
@@ -315,24 +317,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
           textAlign: TextAlign.start,
         ),
         const SizedBox(height: 10),
+        // Carrossel de Oficinas
         StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('oficinas')
-            .where('lista_participantes', arrayContains: FirebaseAuth.instance.currentUser!.uid).snapshots(),
+          stream:
+              FirebaseFirestore.instance
+                  .collection('oficinas')
+                  .where(
+                    'lista_participantes',
+                    arrayContains: FirebaseAuth.instance.currentUser!.uid,
+                  )
+                  .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
-            if(snapshot.data!.docs.isEmpty) {
+            if (snapshot.data!.docs.isEmpty) {
               return Text(
-                'Você não está participando de nenhuma oficina!', 
-                style: TextStyle(
-                  color: Styles.lineBorderColor,
-                  fontSize: 16
-                ),
+                'Você não está participando de nenhuma oficina!',
+                style: TextStyle(color: Styles.lineBorderColor, fontSize: 16),
               );
             }
             return OficinasSection(snapshot: snapshot);
-          }
+          },
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 5),
         SizedBox(
           width: double.infinity,
           child: Text(
@@ -345,76 +351,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             textAlign: TextAlign.start,
           ),
         ),
-        Container(
-          padding: EdgeInsets.all(20),
-          margin: EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            color: Styles.backgroundContentColor,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Row(
-            children: [
-              Image(
-                image: AssetImage('assets/images/imgOficina.png'),
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    Text(
-                      'Relógio de sol',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '10 - 10',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'MAI - MAI',
-                      style: TextStyle(
-                        color: Styles.fontColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Styles.buttonSecond,
-                        ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: BorderSide(color: Styles.fontColor),
-                              ),
-                            ),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        'Informações',
-                        style: TextStyle(
-                          color: Styles.fontColor,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        SizedBox(height: 10),
+        // Carrossel de Agendamentos
+        StreamBuilder(
+          stream:
+              FirebaseFirestore.instance
+                  .collection('agendamentos')
+                  .where('id_usuario', isEqualTo: FirebaseAuth.instance.currentUser?.uid ?? '')
+                  .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return CircularProgressIndicator();
+            if (snapshot.data!.docs.isEmpty) {
+              return Text(
+                'Você não está participando de nenhuma oficina!',
+                style: TextStyle(color: Styles.lineBorderColor, fontSize: 16),
+              );
+            }
+            return VisitasSection(snapshot: snapshot);
+          },
         ),
       ],
     );

@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:app_praca_ciencia/core/styles/styles.dart';
+import 'package:intl/intl.dart';
 
-class OficinasSection extends StatelessWidget {
+class VisitasSection extends StatelessWidget {
   final AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot;
 
-  const OficinasSection({super.key, required this.snapshot});
+  const VisitasSection({super.key, required this.snapshot});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class OficinasSection extends StatelessWidget {
             return GestureDetector(
               onTap:
                   () => Navigator.of(context).pushNamed(
-                    '/workshop',
+                    '/personalScheduling',
                     arguments: {'id': snapshot.data?.docs[index].id},
                   ),
               child: Container(
@@ -44,13 +45,19 @@ class OficinasSection extends StatelessWidget {
                       Flexible(
                         fit: FlexFit.loose,
                         child: Align(
+                          alignment: Alignment.center,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '${snapshot.data?.docs[index]['nome']}',
+                                  DateFormat('dd/MM/yyyy').format(
+                                    DateTime.parse(
+                                      snapshot.data?.docs[index]['data']
+                                          as String,
+                                    ),
+                                  ),
                                   style: TextStyle(
                                     color: Styles.fontColor,
                                     fontSize: 20,
@@ -61,7 +68,7 @@ class OficinasSection extends StatelessWidget {
                                 SizedBox(
                                   width: double.infinity,
                                   child: Text(
-                                    '${snapshot.data?.docs[index]['inicio_evento']} - ${snapshot.data?.docs[index]['fim_evento']}',
+                                    '${snapshot.data?.docs[index]['horario']}',
                                     style: TextStyle(
                                       color: Styles.fontColor,
                                       fontSize: 12,
@@ -70,19 +77,6 @@ class OficinasSection extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    '${snapshot.data?.docs[index]['dia_evento']}',
-                                    style: TextStyle(
-                                      color: Styles.fontColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Styles.buttonSecond,
@@ -96,7 +90,7 @@ class OficinasSection extends StatelessWidget {
                                   ),
                                   onPressed:
                                       () => Navigator.of(context).pushNamed(
-                                        '/workshop',
+                                        '/personalScheduling',
                                         arguments: {
                                           'id': snapshot.data?.docs[index].id,
                                         },

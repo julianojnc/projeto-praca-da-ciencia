@@ -17,11 +17,15 @@ class OficinaScreen extends StatelessWidget {
       appBar: Header(title: 'Oficina'),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('oficinas').doc(id).snapshots(),
+            stream:
+                FirebaseFirestore.instance
+                    .collection('oficinas')
+                    .doc(id)
+                    .snapshots(),
             builder: (context, snapshot) {
-              if(!snapshot.hasData) return CircularProgressIndicator();
+              if (!snapshot.hasData) return CircularProgressIndicator();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -31,86 +35,94 @@ class OficinaScreen extends StatelessWidget {
                       '${snapshot.data!['nome']}',
                       style: TextStyle(
                         color: Styles.fontColor,
-                        fontSize: 28,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
-              
+
                   // Imagem
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/imgOficina.png',
-                      fit: BoxFit.cover,
+                  SizedBox(
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/img-carousel-2.png',
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
-              
+
                   const SizedBox(height: 16),
-              
+
                   // Localização
                   Text(
-                   '${snapshot.data!['local']}',
+                    '${snapshot.data!['local']}',
                     style: TextStyle(
                       color: Styles.fontColor,
-                      fontSize: 20,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-              
+
+                  // Conteudo
                   Container(
                     decoration: BoxDecoration(
                       color: Styles.backgroundContentColor,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Local
                         Row(
                           children: [
-                            const Icon(Icons.location_on, size: 20),
+                            Icon(
+                              Icons.location_on,
+                              size: 24,
+                              color: Styles.fontColor,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               '${snapshot.data!['local']}',
                               style: TextStyle(
                                 color: Styles.fontColor,
-                                fontSize: 14,
+                                fontSize: 18,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-              
+
                         // Horário
                         Row(
                           children: [
-                            const Icon(Icons.access_time, size: 20),
+                            Icon(Icons.access_time, size: 24, color: Styles.fontColor,),
                             const SizedBox(width: 6),
                             Text(
                               '${snapshot.data!['inicio_evento']}h às ${snapshot.data!['fim_evento']}h',
                               style: TextStyle(
                                 color: Styles.fontColor,
-                                fontSize: 14,
+                                fontSize: 18,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-              
+
                         // Gratuito
                         Row(
                           children: [
-                            const Icon(Icons.attach_money, size: 20),
+                            Icon(Icons.person, size: 24, color: Styles.fontColor),
                             const SizedBox(width: 6),
                             Text(
-                              '${snapshot.data!['entrada_preço']}',
+                              '${snapshot.data!['limite_participantes']}',
                               style: TextStyle(
                                 color: Styles.fontColor,
-                                fontSize: 14,
+                                fontSize: 18,
                               ),
                             ),
                           ],
@@ -118,28 +130,34 @@ class OficinaScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-              
+
                   const SizedBox(height: 16),
-              
+
                   // Descrição
                   Text(
                     '${snapshot.data!['descrição']}',
-                    style: TextStyle(
-                      color: Styles.fontColor,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Styles.fontColor, fontSize: 14),
                   ),
                   const SizedBox(height: 24),
-              
+
                   // Botão Agendar
                   Center(
                     child: SizedBox(
                       width: double.infinity,
                       child: Visibility(
-                        visible: snapshot.data!['lista_participantes'].length < num.parse(snapshot.data!['limite_participantes']) 
-                              || snapshot.data!['lista_participantes'].contains(FirebaseAuth.instance.currentUser!.uid),
+                        visible:
+                            snapshot.data!['lista_participantes'].length <
+                                num.parse(
+                                  snapshot.data!['limite_participantes'],
+                                ) ||
+                            snapshot.data!['lista_participantes'].contains(
+                              FirebaseAuth.instance.currentUser!.uid,
+                            ),
                         child: Visibility(
-                          visible: !snapshot.data!['lista_participantes'].contains(FirebaseAuth.instance.currentUser!.uid),
+                          visible:
+                              !snapshot.data!['lista_participantes'].contains(
+                                FirebaseAuth.instance.currentUser!.uid,
+                              ),
                           replacement: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Styles.buttonCancel,
@@ -150,11 +168,17 @@ class OficinaScreen extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
                             onPressed: () async {
-                            await _excluirParticipacao(snapshot.data!.id).then((_){
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Participante adicionado a oficina.')),
+                              await _excluirParticipacao(
+                                snapshot.data!.id,
+                              ).then((_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Participante adicionado a oficina.',
+                                    ),
+                                  ),
                                 );
-                            },);
+                              });
                             },
                             child: Text(
                               'CANCELAR',
@@ -166,7 +190,7 @@ class OficinaScreen extends StatelessWidget {
                             ),
                           ),
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom( 
+                            style: ElevatedButton.styleFrom(
                               backgroundColor: Styles.buttonSecond,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -175,11 +199,17 @@ class OficinaScreen extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
                             onPressed: () async {
-                              await _confirmarParticipacao(snapshot.data!.id).then((_) {
+                              await _confirmarParticipacao(
+                                snapshot.data!.id,
+                              ).then((_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Participante removido da oficina')),
+                                  const SnackBar(
+                                    content: Text(
+                                      'Participante removido da oficina',
+                                    ),
+                                  ),
                                 );
-                            },);
+                              });
                             },
                             child: Text(
                               'PARTICIPAR',
@@ -194,11 +224,11 @@ class OficinaScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-              
+
                   const SizedBox(height: 24),
                 ],
               );
-            }
+            },
           ),
         ),
       ),
@@ -207,13 +237,17 @@ class OficinaScreen extends StatelessWidget {
 
   Future<void> _confirmarParticipacao(String id) async {
     await FirebaseFirestore.instance.collection('oficinas').doc(id).update({
-        'lista_participantes': FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]),
-      });
+      'lista_participantes': FieldValue.arrayUnion([
+        FirebaseAuth.instance.currentUser!.uid,
+      ]),
+    });
   }
 
   Future<void> _excluirParticipacao(String id) async {
-       await FirebaseFirestore.instance.collection('oficinas').doc(id).update({
-        'lista_participantes': FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid]),
-      });
-  } 
+    await FirebaseFirestore.instance.collection('oficinas').doc(id).update({
+      'lista_participantes': FieldValue.arrayRemove([
+        FirebaseAuth.instance.currentUser!.uid,
+      ]),
+    });
+  }
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, file_names
 
+import 'package:app_praca_ciencia/core/services/email_service.dart';
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/menu.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 // ignore: unused_import
 import 'package:intl/intl.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,6 +29,7 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
   int? selectedQuantity;
   DateTime? selectedDate;
   String? selectedTime;
+  bool _isSendingEmail = false;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -289,9 +293,13 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
                     const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
-                        onPressed: _confirmarAgendamento,
+                        onPressed:
+                            _isSendingEmail ? null : _confirmarAgendamento,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Styles.buttonSecond,
+                          backgroundColor:
+                              _isSendingEmail
+                                  ? Colors.grey
+                                  : Styles.buttonSecond,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -303,9 +311,22 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(width: 8),
+                            if (_isSendingEmail)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Styles.fontColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             Text(
-                              'FAZER AGENDA',
+                              _isSendingEmail ? 'AGUARDE...' : 'FAZER AGENDA',
                               style: TextStyle(
                                 color: Styles.fontColor,
                                 fontSize: 18,
@@ -339,42 +360,61 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
         return;
       }
 
-      // Verifica se o horário já está agendado para a mesma data
-      final agendamentoExistente =
-          await FirebaseFirestore.instance
-              .collection('agendamentos')
-              .where('data', isEqualTo: selectedDate!.toIso8601String())
-              .where('horario', isEqualTo: selectedTime)
-              .get();
+      setState(() {
+        _isSendingEmail = true;
+      });
 
-      if (agendamentoExistente.docs.isNotEmpty) {
+      try {
+        // Verifica se o horário já está agendado para a mesma data
+        final agendamentoExistente =
+            await FirebaseFirestore.instance
+                .collection('agendamentos')
+                .where('data', isEqualTo: selectedDate!.toIso8601String())
+                .where('horario', isEqualTo: selectedTime)
+                .get();
+
+        if (agendamentoExistente.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Horário indisponível para esta data.'),
+            ),
+          );
+          return;
+        }
+
+        // Salva os dados no Firestore
+        await FirebaseFirestore.instance.collection('agendamentos').add({
+          'nome': _nomeController.text,
+          'email': _emailController.text,
+          'cep': _cepController.text,
+          'contato': _telefoneController.text,
+          'quantidade': selectedQuantity,
+          'data': selectedDate!.toIso8601String(),
+          'horario': selectedTime,
+          'criado_em': FieldValue.serverTimestamp(),
+          'id_usuario': FirebaseAuth.instance.currentUser!.uid,
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Horário indisponível para esta data.')),
+          const SnackBar(content: Text('Agendamento confirmado!')),
         );
-        return;
+
+        await _sendEmail();
+
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pop(context);
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao processar agendamento: $e')),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSendingEmail = false;
+          });
+        }
       }
-
-      // Salva os dados no Firestore
-      await FirebaseFirestore.instance.collection('agendamentos').add({
-        'nome': _nomeController.text,
-        'email': _emailController.text,
-        'cep': _cepController.text,
-        'contato': _telefoneController.text,
-        'quantidade': selectedQuantity,
-        'data': selectedDate!.toIso8601String(),
-        'horario': selectedTime,
-        'criado_em': FieldValue.serverTimestamp(),
-      });
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Agendamento confirmado!')));
-
-      await _enviarEmailConfirmacao();
-
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context);
-      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preencha todos os campos corretamente')),
@@ -382,19 +422,37 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
     }
   }
 
-  Future<void> _enviarEmailConfirmacao() async {
-    final email = _emailController.text;
-    final assunto = Uri.encodeComponent("Confirmação de Agendamento");
-    final corpo = Uri.encodeComponent(
-      "Olá!\n\nSeu agendamento foi confirmado para o dia ${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} às $selectedTime.\n\nObrigado por visitar a Praça da Ciência!",
-    );
-    final uri = Uri.parse("mailto:$email?subject=$assunto&body=$corpo");
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível enviar o e-mail.')),
+  Future<void> _sendEmail() async {
+    try {
+      // Envia e-mail para o visitante
+      await EmailService.sendConfirmationToVisitor(
+        visitorEmail: _emailController.text,
+        visitorName: _nomeController.text,
+        selectedDate: selectedDate!,
+        selectedTime: selectedTime!,
+        quantity: selectedQuantity!,
       );
+
+      // Envia e-mail para a Praça da Ciência
+      await EmailService.sendNotificationToPraca(
+        visitorName: _nomeController.text,
+        visitorEmail: _emailController.text,
+        visitorPhone: _telefoneController.text,
+        selectedDate: selectedDate!,
+        selectedTime: selectedTime!,
+        quantity: selectedQuantity!,
+        cep: _cepController.text,
+      );
+
+      print('E-mails enviados com sucesso');
+    } on MailerException catch (e) {
+      print('Erro ao enviar e-mails: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao enviar e-mails de confirmação')),
+        );
+      }
+      rethrow;
     }
   }
 
