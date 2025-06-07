@@ -47,7 +47,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               ),
               SizedBox(height: 20), // Espaço entre oficinas e notícias
-              NoticiasSection(),  // Seção notícias adicionada aqui
+              Text(
+                'Noticias',
+                style: TextStyle(
+                  color: Styles.fontColor,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 10),
+              StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('noticias').snapshots(),
+                builder: (context, snapshot) {
+                  return NewsSection(snapshot: snapshot);
+                }
+              ), // Seção notícias adicionada aqui
             ],
           ),
         ),

@@ -11,6 +11,7 @@ import 'package:app_praca_ciencia/presentetion/pages/regulation_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/splash_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/tour_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/login_screen.dart';
+import 'package:app_praca_ciencia/presentetion/pages/news_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         '/schedule': (_) => const AgendamentoScreen(),
         '/workshop': (_) => const OficinaScreen(),
         '/personalScheduling': (_) => const PersonalSchedulingScreen(),
+        '/news': (_) => const NewsScreen(),
       },
 
       // Tela inicial com verificação do Firebase

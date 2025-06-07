@@ -31,26 +31,11 @@ class _MenuState extends State<Menu> {
                 _buildOptionsMenu('Início', '/home', 'homeIcon', context),
                 _buildOptionsMenu('A Praça', '/about', 'pracaIcon', context),
                 _buildOptionsMenu('Mapa', '/mapa', 'mapIcon', context),
-                _buildOptionsMenu(
-                  'Tour Virtual',
-                  '/tour',
-                  'cameraIcon',
-                  context,
-                ),
+                _buildOptionsMenu('Tour Virtual','/tour','cameraIcon',context,),
                 // _buildOptionsMenu('Oficinas', '', 'oficinasIcon', context),
                 _buildOptionsMenu('Agenda', '/schedule', 'agendaIcon', context),
-                _buildOptionsMenu(
-                  'Regras',
-                  '/regulation',
-                  'regrasIcon',
-                  context,
-                ),
-                _buildOptionsMenu(
-                  'Informações',
-                  '/information',
-                  'infoIcon',
-                  context,
-                ),
+                _buildOptionsMenu('Regras','/regulation','regrasIcon',context,),
+                _buildOptionsMenu('Informações','/information','infoIcon',context,),
 
                 const SizedBox(height: 20),
 
