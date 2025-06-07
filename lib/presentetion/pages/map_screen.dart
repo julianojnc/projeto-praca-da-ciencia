@@ -169,7 +169,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       MapPoint(
         id: '4',
-        title: 'Teimosinho',
+        title: 'João Bobo',
         xRel: 0.626,
         yRel: 0.51,
         widthFactor: 0.03,
