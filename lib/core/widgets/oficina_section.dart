@@ -46,71 +46,71 @@ class OficinasSection extends StatelessWidget {
                         child: Align(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${snapshot.data?.docs[index]['nome']}',
-                                  style: TextStyle(
-                                    color: Styles.fontColor,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    '${snapshot.data?.docs[index]['inicio_evento']} - ${snapshot.data?.docs[index]['fim_evento']}',
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${snapshot.data?.docs[index]['nome']}',
                                     style: TextStyle(
                                       color: Styles.fontColor,
-                                      fontSize: 12,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    '${snapshot.data?.docs[index]['dia_evento']}',
-                                    style: TextStyle(
-                                      color: Styles.fontColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Styles.buttonSecond,
-
-                                    shadowColor: Styles.button,
-                                    elevation: 3,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(32.0),
-                                    ),
-                                    minimumSize: const Size(50, 35),
-                                  ),
-                                  onPressed:
-                                      () => Navigator.of(context).pushNamed(
-                                        '/workshop',
-                                        arguments: {
-                                          'id': snapshot.data?.docs[index].id,
-                                        },
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(
+                                      '${snapshot.data?.docs[index]['inicio_evento']} - ${snapshot.data?.docs[index]['fim_evento']}',
+                                      style: TextStyle(
+                                        color: Styles.fontColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                  child: Text(
-                                    'Informações',
-                                    style: TextStyle(
-                                      color: Styles.fontColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(
+                                      '${snapshot.data?.docs[index]['dia_evento']}',
+                                      style: TextStyle(
+                                        color: Styles.fontColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Styles.buttonSecond,
+                                      shadowColor: Styles.button,
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32.0),
+                                      ),
+                                      minimumSize: const Size(50, 35),
+                                    ),
+                                    onPressed:
+                                        () => Navigator.of(context).pushNamed(
+                                          '/workshop',
+                                          arguments: {
+                                            'id': snapshot.data?.docs[index].id,
+                                          },
+                                        ),
+                                    child: Text(
+                                      'Informações',
+                                      style: TextStyle(
+                                        color: Styles.fontColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

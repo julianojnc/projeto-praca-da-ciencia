@@ -45,7 +45,7 @@ class NewsScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
-                        'assets/images/img-carousel-2.png',
+                        'assets/images/${snapshot.data!['image']}',
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -79,8 +79,6 @@ class NewsScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-
-                        // Horário
                         Row(
                           children: [
                             Icon(Icons.calendar_month, size: 24, color: Styles.fontColor,),
@@ -121,8 +119,6 @@ class NewsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Descrição
                   Text(
                     '${snapshot.data!['descricao']}',
                     style: TextStyle(color: Styles.fontColor, fontSize: 14),

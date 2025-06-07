@@ -37,8 +37,8 @@ class NewsSection extends StatelessWidget {
                   width: MediaQuery.sizeOf(context).width / 1.2,
                   child: Row(
                     children: [
-                      const Image(
-                        image: AssetImage('assets/images/imgOficina.png'),
+                      Image(
+                        image: AssetImage('assets/images/${snapshot.data?.docs[index]['image']}'),
                         fit: BoxFit.cover,
                       ),
                       Flexible(
@@ -46,59 +46,60 @@ class NewsSection extends StatelessWidget {
                         child: Align(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${snapshot.data?.docs[index]['nome']}',
-                                  style: TextStyle(
-                                    color: Styles.fontColor,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    '${snapshot.data?.docs[index]['data_publicacao']}',
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${snapshot.data?.docs[index]['nome']}',
                                     style: TextStyle(
                                       color: Styles.fontColor,
-                                      fontSize: 12,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                ),
-
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Styles.buttonSecond,
-
-                                    shadowColor: Styles.button,
-                                    elevation: 3,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(32.0),
-                                    ),
-                                    minimumSize: const Size(50, 35),
-                                  ),
-                                  onPressed:
-                                      () => Navigator.of(context).pushNamed(
-                                        '/news',
-                                        arguments: {
-                                          'id': snapshot.data?.docs[index].id,
-                                        },
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(
+                                      '${snapshot.data?.docs[index]['data_publicacao']}',
+                                      style: TextStyle(
+                                        color: Styles.fontColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                  child: Text(
-                                    'Informações',
-                                    style: TextStyle(
-                                      color: Styles.fontColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Styles.buttonSecond,
+
+                                      shadowColor: Styles.button,
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32.0),
+                                      ),
+                                      minimumSize: const Size(50, 35),
+                                    ),
+                                    onPressed:
+                                        () => Navigator.of(context).pushNamed(
+                                          '/news',
+                                          arguments: {
+                                            'id': snapshot.data?.docs[index].id,
+                                          },
+                                        ),
+                                    child: Text(
+                                      'Informações',
+                                      style: TextStyle(
+                                        color: Styles.fontColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
