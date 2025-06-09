@@ -176,15 +176,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
         decoration: BoxDecoration(color: Styles.backgroundColor),
         child: SingleChildScrollView(
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 15),
+            margin: EdgeInsets.only(top: 20),
             decoration: BoxDecoration(
               color: Color(0xFFFFFFF0),
               borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 15,
+                  offset: const Offset(5, 5),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -219,20 +227,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   'CPF',
                   'cadDocIcon',
                   _cpfController,
+                  keyboardType: TextInputType.number,
                   formatter: _cpfFormatter,
                 ),
                 // Input de Email
                 _buildTextField('E-mail', 'cadEmailIcon', _emailController),
+                // Input de Telefone
                 _buildTextField(
                   'Telefone',
                   'cadPhoneIcon',
                   _telefoneController,
+                  keyboardType: TextInputType.number,
                   formatter: _telefoneFormatter,
                 ),
+                // Input de CEP
                 _buildTextField(
                   'CEP',
                   'cadLocalIcon',
                   _cepController,
+                  keyboardType: TextInputType.number,
                   formatter: _cepFormatter,
                 ),
                 // Input de Senha
@@ -339,9 +352,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool isDateField = false,
     // Validacao da Mascara no input
     TextInputFormatter? formatter,
+    // Validacao do tipo do input
+    TextInputType? keyboardType,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: 15),
       child: PhysicalModel(
         borderRadius: BorderRadius.circular(50),
         color: Styles.textFieldColor,
@@ -366,6 +381,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Expanded(
                 child: TextField(
                   controller: controller,
+                  keyboardType: keyboardType,
                   // Visualizacao da senha no input
                   obscureText:
                       isPassword
@@ -381,7 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     suffixIcon:
-                    // Visualizacao da senha
+                        // Visualizacao da senha
                         isPassword
                             ? IconButton(
                               icon: Icon(

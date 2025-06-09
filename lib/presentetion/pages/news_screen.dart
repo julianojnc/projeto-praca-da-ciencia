@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 
-class OficinaScreen extends StatelessWidget {
-  const OficinaScreen({super.key});
+class NewsScreen extends StatelessWidget {
+  const NewsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,21 +13,18 @@ class OficinaScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Styles.backgroundColor,
-      appBar: Header(title: 'Oficina'),
+      appBar: Header(title: 'Noticias'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           child: StreamBuilder(
             stream:
                 FirebaseFirestore.instance
-                    .collection('oficinas')
+                    .collection('noticias')
                     .doc(id)
                     .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
+              if (!snapshot.hasData) return CircularProgressIndicator();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -44,33 +41,17 @@ class OficinaScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // Imagem
                   SizedBox(
                     width: double.infinity,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
-                        'assets/images/img-carousel-2.png',
+                        'assets/images/${snapshot.data!['image']}',
                         fit: BoxFit.fill,
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Localização
-                  Text(
-                    '${snapshot.data!['local']}',
-                    style: TextStyle(
-                      color: Styles.fontColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Conteúdo informativo
                   Container(
                     decoration: BoxDecoration(
                       color: Styles.backgroundContentColor,
@@ -99,18 +80,16 @@ class OficinaScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-
-                        // Horário
                         Row(
                           children: [
                             Icon(
-                              Icons.access_time,
+                              Icons.calendar_month,
                               size: 24,
                               color: Styles.fontColor,
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              '${snapshot.data!['inicio_evento']}h às ${snapshot.data!['fim_evento']}h',
+                              'Publicada em ${snapshot.data!['data_publicacao']}',
                               style: TextStyle(
                                 color: Styles.fontColor,
                                 fontSize: 18,
@@ -119,38 +98,16 @@ class OficinaScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-
-                        // Dia do evento
                         Row(
                           children: [
                             Icon(
-                              Icons.calendar_today,
+                              Icons.person,
                               size: 24,
                               color: Styles.fontColor,
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              '${snapshot.data!['dia_evento']}',
-                              style: TextStyle(
-                                color: Styles.fontColor,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Limite de participantes (apenas informação)
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.people,
-                              size: 24,
-                              color: Styles.fontColor,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Vagas: ${snapshot.data!['limite_participantes']}',
+                              '${snapshot.data!['autor']}',
                               style: TextStyle(
                                 color: Styles.fontColor,
                                 fontSize: 18,
@@ -161,23 +118,26 @@ class OficinaScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Descrição
-                  Text(
-                    'Descrição:',
-                    style: TextStyle(
-                      color: Styles.fontColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      '${snapshot.data!['nome']}',
+                      style: TextStyle(
+                        color: Styles.fontColor,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Text(
-                    '${snapshot.data!['descrição']}',
-                    style: TextStyle(color: Styles.fontColor, fontSize: 16),
+                    '${snapshot.data!['descricao']}',
+                    style: TextStyle(color: Styles.fontColor, fontSize: 18),
+                    textAlign: TextAlign.justify,
                   ),
+                  const SizedBox(height: 24),
                 ],
               );
             },

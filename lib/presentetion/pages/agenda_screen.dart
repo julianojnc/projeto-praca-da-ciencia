@@ -1,6 +1,7 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/login_required_dialog.dart';
+import 'package:app_praca_ciencia/presentetion/pages/cadastro_escolas_screen.dart';
 import 'package:app_praca_ciencia/presentetion/pages/cadastro_visitante_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -85,12 +86,12 @@ class _AgendamentoScreenState extends State<AgendamentoScreen> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => CadastroEscolasGruposPage(),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CadastroEscolasScreen(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,

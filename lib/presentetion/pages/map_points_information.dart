@@ -31,7 +31,11 @@ class MapPointInformationScreen extends StatelessWidget {
             children: [
               Container(
                 margin: EdgeInsets.symmetric(vertical: 20),
-                child: Image(image: AssetImage(img), fit: BoxFit.cover),
+                child: Image(
+                  height: 250,
+                  image: AssetImage(img),
+                  fit: BoxFit.cover,
+                ),
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),

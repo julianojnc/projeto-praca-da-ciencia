@@ -1,6 +1,5 @@
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/calendar.dart';
-// import 'package:app_praca_ciencia/core/widgets/calendar.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
 import 'package:app_praca_ciencia/core/widgets/login_required_dialog.dart';
 import 'package:app_praca_ciencia/core/widgets/oficina_section.dart';
@@ -180,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             // Navegação das abas
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildTabButton('Dados Pessoais', showProfile, () {
                   setState(() {
@@ -216,6 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? Styles.button : Colors.grey[400],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       ),
       child: Text(
         label,
@@ -253,6 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: _cpfController,
           readOnly: !isEditing,
           formatter: _cpfFormatter,
+          keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 16),
         _buildTextField(
@@ -268,6 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: _telefoneController,
           readOnly: !isEditing,
           formatter: _telefoneFormatter,
+          keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 16),
         _buildTextField(
@@ -276,6 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: _enderecoController,
           readOnly: !isEditing,
           formatter: _cepFormatter,
+          keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 24),
         ElevatedButton(
@@ -357,7 +360,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           stream:
               FirebaseFirestore.instance
                   .collection('agendamentos')
-                  .where('id_usuario', isEqualTo: FirebaseAuth.instance.currentUser?.uid ?? '')
+                  .where(
+                    'id_usuario',
+                    isEqualTo: FirebaseAuth.instance.currentUser?.uid ?? '',
+                  )
                   .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
@@ -384,6 +390,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool readOnly = true,
     // Validação se o input contém mascara
     TextInputFormatter? formatter,
+    // Tipo do Input
+    TextInputType? keyboardType,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8),
@@ -413,6 +421,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   readOnly: readOnly,
                   inputFormatters: formatter != null ? [formatter] : null,
                   controller: controller,
+                  keyboardType: keyboardType,
                   decoration: InputDecoration(
                     hintText: hintText,
                     border: InputBorder.none,

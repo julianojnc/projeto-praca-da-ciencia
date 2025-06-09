@@ -1,22 +1,15 @@
-// ignore_for_file: use_key_in_widget_constructors, file_names
-
 import 'package:app_praca_ciencia/core/services/email_service.dart';
 import 'package:app_praca_ciencia/core/styles/styles.dart';
 import 'package:app_praca_ciencia/core/widgets/header.dart';
-import 'package:app_praca_ciencia/core/widgets/menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/date_symbol_data_local.dart';
 // ignore: unused_import
 import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CadastroVisitanteScreen extends StatefulWidget {
@@ -77,268 +70,270 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      locale: const Locale('pt', 'BR'),
-      supportedLocales: const [Locale('pt', 'BR')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: Scaffold(
-        appBar: Header(title: 'Agendamento'),
-        backgroundColor: Styles.backgroundColor,
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-              color: Styles.backgroundContentColor,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: Styles.lineBorderColor),
+    return Scaffold(
+      appBar: Header(title: 'Agendamento'),
+      body: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: const Locale('pt', 'BR'),
+        supportedLocales: const [Locale('pt', 'BR')],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(
+          backgroundColor: Styles.backgroundColor,
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Styles.backgroundContentColor,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Styles.lineBorderColor),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Cadastro de\nvisitantes',
-                        style: TextStyle(
-                          color: Styles.fontColor,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    // Theme para remover as bordas do ExpansionTile
-                    Theme(
-                      data: Theme.of(
-                        context,
-                      ).copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        initiallyExpanded: true,
-                        title: Text(
-                          'Protocolo de visita',
+                        child: Text(
+                          'Cadastro de\nvisitantes',
                           style: TextStyle(
-                            fontSize: 24,
                             color: Styles.fontColor,
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        children: [
-                          _bulletList([
-                            'Caso venha de bicicleta, deixe-a presa ao bicicletário;',
-                            'Informe ao porteiro que agendou uma visita mediada;',
-                            'Faça sua visita com a companhia de um estudante de graduação das áreas da ciência;',
-                            'Se houver menores de 10 anos no grupo, é preciso estar com adulto responsável;',
-                            'Proibido bebidas alcoólicas e fumo na Praça da Ciência;',
-                            'Proibida a entrada sem camisa ou com trajes de banho;',
-                            'Animais domésticos não são permitidos;',
-                            'Festas de aniversário e piqueniques são proibidos;',
-                          ]),
-                        ],
                       ),
-                    ),
-                    _buildTitle('Dados Pessoais'),
-                    _buildLabel('Nome'),
-                    _buildTextFiled('Nome', controller: _nomeController),
-                    _buildLabel('E-mail'),
-                    _buildTextFiled(
-                      'E-mail',
-                      controller: _emailController,
-                      validator: _validateEmail,
-                    ),
-                    _buildLabel('CEP'),
-                    _buildTextFiled(
-                      'CEP',
-                      controller: _cepController,
-                      keyboardType: TextInputType.number,
-                      formatter: _cepFormatter,
-                      validator: _validateCep,
-                    ),
-                    _buildLabel('Contato'),
-                    _buildTextFiled(
-                      'Contato',
-                      controller: _telefoneController,
-                      keyboardType: TextInputType.number,
-                      formatter: _telefoneFormatter,
-                      validator: _validateContato,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTitle('Quantidade de pessoas'),
-
-                    // Botões de quantidade de pessoas
-                    Wrap(
-                      spacing: 8,
-                      children: List.generate(10, (index) {
-                        return ChoiceChip(
-                          label: SizedBox(
-                            width: 20,
-                            child: Text(
-                              '${index + 1}',
-                              style: TextStyle(
-                                color: Styles.fontColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                              textAlign: TextAlign.center,
+                      // Theme para remover as bordas do ExpansionTile
+                      Theme(
+                        data: Theme.of(
+                          context,
+                        ).copyWith(dividerColor: Colors.transparent),
+                        child: ExpansionTile(
+                          initiallyExpanded: true,
+                          title: Text(
+                            'Protocolo de visita',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Styles.fontColor,
+                              fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                          selected: selectedQuantity == index + 1,
-                          onSelected: (selected) {
-                            setState(() {
-                              selectedQuantity = selected ? index + 1 : null;
-                            });
-                          },
-                          selectedColor: Styles.textFieldColor,
-                        );
-                      }),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildTitle('Escolha uma data'),
-
-                    // Calendario
-                    TableCalendar(
-                      locale: 'pt_BR',
-                      firstDay: DateTime.now(),
-                      lastDay: DateTime.now().add(const Duration(days: 365)),
-                      focusedDay: selectedDate ?? DateTime.now(),
-                      headerStyle: HeaderStyle(
-                        titleCentered: true,
-                        formatButtonVisible: false,
-                      ),
-                      selectedDayPredicate:
-                          (day) => isSameDay(selectedDate, day),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          selectedDate = selectedDay;
-                        });
-                      },
-                      calendarStyle: const CalendarStyle(
-                        // Data Selecionada
-                        selectedDecoration: BoxDecoration(
-                          color: Colors.orange,
-                          shape: BoxShape.circle,
-                        ),
-                        // Data do dia atual
-                        todayDecoration: BoxDecoration(
-                          color: Colors.brown,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildTitle('Escolha um horário'),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children:
-                          [
-                            'Manhã - 9h',
-                            'Manhã - 10h',
-                            'Tarde - 14h',
-                            'Tarde - 15h',
-                          ].map((time) {
-                            return ChoiceChip(
-                              label: SizedBox(
-                                width: 100,
-                                child: Text(
-                                  time,
-                                  style: TextStyle(
-                                    color: Styles.fontColor,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              selected: selectedTime == time,
-                              onSelected: (selected) {
-                                setState(() {
-                                  selectedTime = selected ? time : null;
-                                });
-                              },
-                              selectedColor: Styles.textFieldColor,
-                            );
-                          }).toList(),
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'A Praça da Ciência é um dos Centros de Ciência, Educação e Cultura da cidade de Vitória/ES, você será muito bem-vindo!',
-                        style: TextStyle(
-                          color: Styles.fontColor,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed:
-                            _isSendingEmail ? null : _confirmarAgendamento,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _isSendingEmail
-                                  ? Colors.grey
-                                  : Styles.buttonSecond,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 16,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (_isSendingEmail)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Styles.fontColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            Text(
-                              _isSendingEmail ? 'AGUARDE...' : 'FAZER AGENDA',
-                              style: TextStyle(
-                                color: Styles.fontColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            _bulletList([
+                              'Caso venha de bicicleta, deixe-a presa ao bicicletário;',
+                              'Informe ao porteiro que agendou uma visita mediada;',
+                              'Faça sua visita com a companhia de um estudante de graduação das áreas da ciência;',
+                              'Se houver menores de 10 anos no grupo, é preciso estar com adulto responsável;',
+                              'Proibido bebidas alcoólicas e fumo na Praça da Ciência;',
+                              'Proibida a entrada sem camisa ou com trajes de banho;',
+                              'Animais domésticos não são permitidos;',
+                              'Festas de aniversário e piqueniques são proibidos;',
+                            ]),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
+                      _buildTitle('Dados Pessoais'),
+                      _buildLabel('Nome'),
+                      _buildTextFiled('Nome', controller: _nomeController),
+                      _buildLabel('E-mail'),
+                      _buildTextFiled(
+                        'E-mail',
+                        controller: _emailController,
+                        validator: _validateEmail,
+                      ),
+                      _buildLabel('CEP'),
+                      _buildTextFiled(
+                        'CEP',
+                        controller: _cepController,
+                        keyboardType: TextInputType.number,
+                        formatter: _cepFormatter,
+                        validator: _validateCep,
+                      ),
+                      _buildLabel('Contato'),
+                      _buildTextFiled(
+                        'Contato',
+                        controller: _telefoneController,
+                        keyboardType: TextInputType.number,
+                        formatter: _telefoneFormatter,
+                        validator: _validateContato,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTitle('Quantidade de pessoas'),
+
+                      // Botões de quantidade de pessoas
+                      Wrap(
+                        spacing: 8,
+                        children: List.generate(10, (index) {
+                          return ChoiceChip(
+                            label: SizedBox(
+                              width: 20,
+                              child: Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  color: Styles.fontColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            selected: selectedQuantity == index + 1,
+                            onSelected: (selected) {
+                              setState(() {
+                                selectedQuantity = selected ? index + 1 : null;
+                              });
+                            },
+                            selectedColor: Styles.textFieldColor,
+                          );
+                        }),
+                      ),
+
+                      const SizedBox(height: 24),
+                      _buildTitle('Escolha uma data'),
+
+                      // Calendario
+                      TableCalendar(
+                        locale: 'pt_BR',
+                        firstDay: DateTime.now(),
+                        lastDay: DateTime.now().add(const Duration(days: 365)),
+                        focusedDay: selectedDate ?? DateTime.now(),
+                        headerStyle: HeaderStyle(
+                          titleCentered: true,
+                          formatButtonVisible: false,
+                        ),
+                        selectedDayPredicate:
+                            (day) => isSameDay(selectedDate, day),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          setState(() {
+                            selectedDate = selectedDay;
+                          });
+                        },
+                        calendarStyle: const CalendarStyle(
+                          // Data Selecionada
+                          selectedDecoration: BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          // Data do dia atual
+                          todayDecoration: BoxDecoration(
+                            color: Colors.brown,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildTitle('Escolha um horário'),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children:
+                            [
+                              'Manhã - 9h',
+                              'Manhã - 10h',
+                              'Tarde - 14h',
+                              'Tarde - 15h',
+                            ].map((time) {
+                              return ChoiceChip(
+                                label: SizedBox(
+                                  width: 100,
+                                  child: Text(
+                                    time,
+                                    style: TextStyle(
+                                      color: Styles.fontColor,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                selected: selectedTime == time,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    selectedTime = selected ? time : null;
+                                  });
+                                },
+                                selectedColor: Styles.textFieldColor,
+                              );
+                            }).toList(),
+                      ),
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'A Praça da Ciência é um dos Centros de Ciência, Educação e Cultura da cidade de Vitória/ES, você será muito bem-vindo!',
+                          style: TextStyle(
+                            color: Styles.fontColor,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed:
+                              _isSendingEmail ? null : _confirmarAgendamento,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                _isSendingEmail
+                                    ? Colors.grey
+                                    : Styles.buttonSecond,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 16,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_isSendingEmail)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Styles.fontColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              Text(
+                                _isSendingEmail ? 'AGUARDE...' : 'FAZER AGENDA',
+                                style: TextStyle(
+                                  color: Styles.fontColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -434,7 +429,7 @@ class _CadastroVisitanteScreenState extends State<CadastroVisitanteScreen> {
       );
 
       // Envia e-mail para a Praça da Ciência
-      await EmailService.sendNotificationToPraca(
+      await EmailService.sendNotificationToPracaVisitantes(
         visitorName: _nomeController.text,
         visitorEmail: _emailController.text,
         visitorPhone: _telefoneController.text,

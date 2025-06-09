@@ -25,6 +25,13 @@ class _MenuState extends State<Menu> {
             decoration: BoxDecoration(
               color: Styles.backgroundContentColor,
               borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 15,
+                  offset: const Offset(5, 5),
+                ),
+              ],
             ),
             child: Column(
               children: [
